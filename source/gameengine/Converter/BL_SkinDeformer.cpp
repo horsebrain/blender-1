@@ -55,7 +55,6 @@
 #include "BLI_utildefines.h"
 #include "BKE_armature.h"
 #include "BKE_action.h"
-#include "MT_Vector3.h"
 
 extern "C" {
 	#include "BKE_lattice.h"
@@ -264,8 +263,8 @@ void BL_SkinDeformer::UpdateTransverts()
 	}
 
 	// AABB Box : min/max.
-	MT_Vector3 aabbMin(FLT_MAX, FLT_MAX, FLT_MAX);
-	MT_Vector3 aabbMax(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+	mt::vec3 aabbMin(FLT_MAX, FLT_MAX, FLT_MAX);
+	mt::vec3 aabbMax(FLT_MIN, FLT_MIN, FLT_MIN);
 
 	// the vertex cache is unique to this deformer, no need to update it
 	// if it wasn't updated! We must update all the materials at once
@@ -280,25 +279,20 @@ void BL_SkinDeformer::UpdateTransverts()
 			if (m_copyNormals)
 				v->SetNormal(m_transnors[vinfo.getOrigIndex()].data());
 
-			MT_Vector3 vertpos = v->xyz();
+			mt::vec3 vertpos = v->xyz();
 
 			if (!m_gameobj->GetAutoUpdateBounds()) {
 				continue;
 			}
 
-			aabbMin.x() = std::min(aabbMin.x(), vertpos.x());
-			aabbMin.y() = std::min(aabbMin.y(), vertpos.y());
-			aabbMin.z() = std::min(aabbMin.z(), vertpos.z());
-			aabbMax.x() = std::max(aabbMax.x(), vertpos.x());
-			aabbMax.y() = std::max(aabbMax.y(), vertpos.y());
-			aabbMax.z() = std::max(aabbMax.z(), vertpos.z());
+			aabbMin = mt::vec3::Min(aabbMin, vertpos);
+			aabbMax = mt::vec3::Max(aabbMax, vertpos);
 		}
 
 		array->SetModifiedFlag(RAS_IDisplayArray::POSITION_MODIFIED | RAS_IDisplayArray::NORMAL_MODIFIED);
 	}
 
 	m_boundingBox->SetAabb(aabbMin, aabbMax);
-
 
 	if (m_copyNormals)
 		m_copyNormals = false;

@@ -51,11 +51,11 @@ RAS_VertexInfo::~RAS_VertexInfo()
 {
 }
 
-RAS_IVertex::RAS_IVertex(const MT_Vector3& xyz,
-						 const MT_Vector4& tangent,
-						 const MT_Vector3& normal)
+RAS_IVertex::RAS_IVertex(const mt::vec3& xyz,
+						 const mt::vec4& tangent,
+						 const mt::vec3& normal)
 {
-	xyz.getValue(m_localxyz);
+	xyz.Pack(m_localxyz);
 	SetNormal(normal);
 	SetTangent(tangent);
 }

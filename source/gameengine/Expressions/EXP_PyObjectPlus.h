@@ -37,8 +37,8 @@
 
 #include "EXP_Python.h"
 #include <string>
-#include "MT_Vector3.h"
-#include <stddef.h>
+#include <cstddef> // For offsetof.
+#include "mathfu.h"
 
 #ifdef WITH_PYTHON
 #ifdef USE_MATHUTILS
@@ -373,7 +373,7 @@ typedef struct EXP_PYATTRIBUTE_DEF {
 		int *m_intPtr;
 		float *m_floatPtr;
 		std::string *m_stringPtr;
-		MT_Vector3 *m_vectorPtr;
+		mt::vec3 *m_vectorPtr;
 		char *m_charPtr;
 	} m_typeCheck;
 } PyAttributeDef;
@@ -499,7 +499,7 @@ typedef struct EXP_PYATTRIBUTE_DEF {
 #define EXP_PYATTRIBUTE_CHAR_RO(name, object, field) \
 	{ name, EXP_PYATTRIBUTE_TYPE_CHAR, EXP_PYATTRIBUTE_RO, 0, 0, 0.f, 0.f, false, false, offsetof(object, field), sizeof(((object *)0)->field), 1, nullptr, nullptr, nullptr, {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, ((object *)0)->field} }
 
-/// For MT_Vector3 member.
+/// For mt::vec3 member.
 #define EXP_PYATTRIBUTE_VECTOR_RW(name, min, max, object, field) \
 	{ name, EXP_PYATTRIBUTE_TYPE_VECTOR, EXP_PYATTRIBUTE_RW, 0, 0, min, max, true, false, offsetof(object, field), 0, 1, nullptr, nullptr, nullptr, {nullptr, nullptr, nullptr, nullptr, nullptr, &((object *)0)->field, nullptr} }
 #define EXP_PYATTRIBUTE_VECTOR_RW_CHECK(name, min, max, clamp, object, field, function) \
