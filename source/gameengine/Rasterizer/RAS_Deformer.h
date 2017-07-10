@@ -53,7 +53,7 @@ class SCA_IObject;
 class RAS_Deformer
 {
 public:
-	RAS_Deformer(RAS_MeshObject *mesh);
+	RAS_Deformer(RAS_MeshObject *mesh, bool skipTransform);
 	virtual ~RAS_Deformer();
 
 	virtual void Relink(std::map<SCA_IObject *, SCA_IObject *>& map) = 0;
@@ -62,9 +62,9 @@ public:
 	virtual void UpdateBuckets(void)=0;
 	virtual RAS_Deformer *GetReplica()=0;
 	virtual void ProcessReplica();
-	virtual bool SkipVertexTransform()
+	bool SkipVertexTransform() const
 	{
-		return false;
+		return m_skipTransform;
 	}
 
 	// true when deformer produces varying vertex (shape or armature)
@@ -86,6 +86,7 @@ public:
 protected:
 	RAS_MeshObject *m_mesh;
 	bool m_bDynamic;
+	bool m_skipTransform;
 
 	RAS_IDisplayArrayList m_displayArrayList;
 	RAS_DisplayArrayBucketList m_displayArrayBucketList;

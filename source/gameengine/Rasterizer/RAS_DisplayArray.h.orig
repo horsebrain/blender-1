@@ -33,8 +33,13 @@
 template <class VertexData>
 class RAS_BatchDisplayArray;
 
-/// An array with data used for OpenGL drawing.
+<<<<<<< HEAD
+/// An array with data used for OpenGL drawing
 template <class VertexData>
+=======
+/// An array with data used for OpenGL drawing.
+template <class Vertex>
+>>>>>>> Add new attribute implementation.
 class RAS_DisplayArray : public virtual RAS_IDisplayArray
 {
 friend class RAS_BatchDisplayArray<VertexData>;
@@ -77,27 +82,47 @@ public:
 
 	virtual intptr_t GetVertexXYZOffset() const
 	{
-		return offsetof(VertexData, position);
+<<<<<<< HEAD
+		return (void *)offsetof(VertexData, position);
+=======
+		return offsetof(Vertex, m_localxyz);
+>>>>>>> Add new attribute implementation.
 	}
 
 	virtual intptr_t GetVertexNormalOffset() const
 	{
-		return offsetof(VertexData, normal);
+<<<<<<< HEAD
+		return (void *)offsetof(VertexData, normal);
+=======
+		return offsetof(Vertex, m_normal);
+>>>>>>> Add new attribute implementation.
 	}
 
 	virtual intptr_t GetVertexTangentOffset() const
 	{
-		return offsetof(VertexData, tangent);
+<<<<<<< HEAD
+		return (void *)offsetof(VertexData, tangent);
+=======
+		return offsetof(Vertex, m_tangent);
+>>>>>>> Add new attribute implementation.
 	}
 
 	virtual intptr_t GetVertexUVOffset() const
 	{
-		return offsetof(VertexData, uvs);
+<<<<<<< HEAD
+		return (void *)offsetof(VertexData, uvs);
+=======
+		return offsetof(Vertex, m_uvs);
+>>>>>>> Add new attribute implementation.
 	}
 
 	virtual intptr_t GetVertexColorOffset() const
 	{
-		return offsetof(VertexData, colors);
+<<<<<<< HEAD
+		return (void *)offsetof(VertexData, colors);
+=======
+		return offsetof(Vertex, m_rgba);
+>>>>>>> Add new attribute implementation.
 	}
 
 	virtual unsigned short GetVertexUvSize() const
