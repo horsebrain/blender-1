@@ -19,33 +19,27 @@
 #
 # The Original Code is: all of this file.
 #
-# Contributor(s): Tristan Porteries.
+# Contributor(s): Jacques Beaurain.
 #
 # ***** END GPL LICENSE BLOCK *****
 
 set(INC
-	.
-	../Expressions
-	../GameLogic
-	../SceneGraph
-	../../blender/blenlib
-	../../blender/python/generic
-	../../../intern/guardedalloc
-	../../../intern/string
-	../../../intern/termcolor
+
 )
 
 set(INC_SYS
-	../../../intern/moto/include
+
 )
 
 set(SRC
-	CM_Message.cpp
+	Atomics.h
+	LockLessMultiReadPipe.h
+	TaskScheduler.h
+	TaskScheduler_c.h
+	Threads.h
 
-	CM_Format.h
-	CM_List.h
-	CM_Message.h
-	CM_RefCount.h
+	TaskScheduler.cpp
+	TaskScheduler_c.cpp
 )
 
-blender_add_lib(ge_common "${SRC}" "${INC}" "${INC_SYS}")
+blender_add_lib(bf_intern_enkits "${SRC}" "${INC}" "${INC_SYS}")

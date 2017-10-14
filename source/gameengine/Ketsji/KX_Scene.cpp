@@ -199,8 +199,6 @@ KX_Scene::KX_Scene(SCA_IInputDevice *inputDevice,
 	m_bucketmanager=new RAS_BucketManager(textMaterial);
 	m_boundingBoxManager = new RAS_BoundingBoxManager();
 
-	m_animationPool = BLI_task_pool_create(KX_GetActiveEngine()->GetTaskScheduler(), &m_animationPoolData);
-
 #ifdef WITH_PYTHON
 	m_attr_dict = nullptr;
 
@@ -227,10 +225,6 @@ KX_Scene::~KX_Scene()
 
 	if (m_obstacleSimulation)
 		delete m_obstacleSimulation;
-
-	if (m_animationPool) {
-		BLI_task_pool_free(m_animationPool);
-	}
 
 	if (m_objectlist)
 		m_objectlist->Release();
@@ -1306,17 +1300,10 @@ void KX_Scene::AddAnimatedObject(KX_GameObject *gameobj)
 	CM_ListAddIfNotFound(m_animatedlist, gameobj);
 }
 
-static void update_anim_thread_func(TaskPool *pool, void *taskdata, int UNUSED(threadid))
+static void task_func(KX_GameObject *gameobj, double curtime)
 {
-	KX_GameObject *gameobj, *parent;
-	bool needs_update;
-	KX_Scene::AnimationPoolData *data = (KX_Scene::AnimationPoolData *)BLI_task_pool_userdata(pool);
-	double curtime = data->curtime;
-
-	gameobj = (KX_GameObject*)taskdata;
-
 	// Non-armature updates are fast enough, so just update them
-	needs_update = gameobj->GetGameObjectType() != SCA_IObject::OBJ_ARMATURE;
+	bool needs_update = gameobj->GetGameObjectType() != SCA_IObject::OBJ_ARMATURE;
 
 	if (!needs_update) {
 		// If we got here, we're looking to update an armature, so check its children meshes
@@ -1350,7 +1337,7 @@ static void update_anim_thread_func(TaskPool *pool, void *taskdata, int UNUSED(t
 
 	if (needs_update) {
 		const std::vector<KX_GameObject *> children = gameobj->GetChildren();
-		parent = gameobj->GetParent();
+		KX_GameObject *parent = gameobj->GetParent();
 
 		// Only do deformers here if they are not parented to an armature, otherwise the armature will
 		// handle updating its children
@@ -1365,15 +1352,33 @@ static void update_anim_thread_func(TaskPool *pool, void *taskdata, int UNUSED(t
 	}
 }
 
-void KX_Scene::UpdateAnimations(double curtime)
+struct KX_AnimationTaskSet : enki::ITaskSet
 {
-	m_animationPoolData.curtime = curtime;
+	const std::vector<KX_GameObject *>& m_animatedObjects;
+	double m_curtime;
 
-	for (KX_GameObject *gameobj : m_animatedlist) {
-		BLI_task_pool_push(m_animationPool, update_anim_thread_func, gameobj, false, TASK_PRIORITY_LOW);
+	KX_AnimationTaskSet(const std::vector<KX_GameObject *>& animatedObjects, double curtime)
+		:enki::ITaskSet(animatedObjects.size()),
+		m_animatedObjects(animatedObjects),
+		m_curtime(curtime)
+	{
 	}
 
-	BLI_task_pool_work_and_wait(m_animationPool);
+	virtual void ExecuteRange(enki::TaskSetPartition range, uint32_t UNUSED(threadnum))
+	{
+		for (unsigned int i = range.start, end = range.end; i < end; ++i) {
+			task_func(m_animatedObjects[i], m_curtime);
+		}
+	}
+};
+
+void KX_Scene::UpdateAnimations(double curtime)
+{
+	KX_AnimationTaskSet animTask(m_animatedlist, curtime);
+	enki::TaskScheduler& taskScheduler = KX_GetActiveEngine()->GetTaskScheduler();
+
+	taskScheduler.AddTaskSetToPipe(&animTask);
+	taskScheduler.WaitforTaskSet(&animTask);
 }
 
 void KX_Scene::LogicUpdateFrame(double curtime)
