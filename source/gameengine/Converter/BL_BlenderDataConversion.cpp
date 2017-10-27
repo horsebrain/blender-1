@@ -922,9 +922,10 @@ static KX_GameObject *BL_GameObjectFromBlenderObject(Object *ob, KX_Scene *kxsce
 
 		case OB_ARMATURE:
 		{
-			gameobj = new BL_ArmatureObject(kxscene, KX_Scene::m_callbacks, ob, kxscene->GetBlenderScene());
+			BL_ArmatureObject *armature = new BL_ArmatureObject(kxscene, KX_Scene::m_callbacks, ob, kxscene->GetBlenderScene());
+			kxscene->AddArmatureObject(armature);
 
-			kxscene->AddAnimatedObject(gameobj);
+			gameobj = armature;
 
 			break;
 		}

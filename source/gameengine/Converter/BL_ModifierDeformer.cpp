@@ -135,6 +135,7 @@ bool BL_ModifierDeformer::HasArmatureDeformer(Object *ob)
 
 void BL_ModifierDeformer::Update(void)
 {
+	BL_ShapeDeformer::Update();
 	/* execute the modifiers */
 	Object *blendobj = m_gameobj->GetBlenderObject();
 	/* hack: the modifiers require that the mesh is attached to the object

@@ -318,15 +318,12 @@ void BL_SkinDeformer::UpdateInternal(bool shape_applied)
 	/* Update the current frame */
 	m_lastArmaUpdate = m_armobj->GetLastFrame();
 
-	/* dynamic vertex, cannot use display list */
-	m_bDynamic = true;
-
 	UpdateTransverts();
 
 	UpdateDisplayArrays();
 }
 
-void BL_SkinDeformer::Update(void)
+void BL_SkinDeformer::Update()
 {
 	UpdateInternal(false);
 }

@@ -139,6 +139,7 @@ void KX_SoftBodyDeformer::Update()
 
 		array->SetModifiedFlag(RAS_IDisplayArray::POSITION_MODIFIED | RAS_IDisplayArray::NORMAL_MODIFIED);
 	}
+
 	m_boundingBox->SetAabb(aabbMin, aabbMax);
 }
 
