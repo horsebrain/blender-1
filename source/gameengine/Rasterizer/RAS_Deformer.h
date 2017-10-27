@@ -57,9 +57,8 @@ public:
 	virtual ~RAS_Deformer();
 
 	virtual void Relink(std::map<SCA_IObject *, SCA_IObject *>& map) = 0;
-	virtual void Apply(RAS_MeshMaterial *meshmat, RAS_IDisplayArray *array) = 0;
-	virtual bool Update(void)=0;
-	virtual void UpdateBuckets(void)=0;
+	virtual void Update(void)=0;
+	virtual bool NeedUpdate() const = 0;
 	virtual RAS_Deformer *GetReplica()=0;
 	virtual void ProcessReplica();
 	virtual bool SkipVertexTransform()

@@ -66,21 +66,9 @@ public:
 	virtual void ProcessReplica();
 
 	virtual ~BL_SkinDeformer();
-	bool Update();
-	bool UpdateInternal(bool shape_applied);
-	virtual void Apply(RAS_MeshMaterial *meshmat, RAS_IDisplayArray *array);
-	virtual void UpdateBuckets()
-	{
-		// update the deformer and all the mesh slots; Apply() does it well, so just call it.
-		Apply(nullptr, nullptr);
-	}
-	bool PoseUpdated()
-	{
-		if (m_armobj && m_lastArmaUpdate != m_armobj->GetLastFrame()) {
-			return true;
-		}
-		return false;
-	}
+	virtual void Update();
+	virtual bool NeedUpdate() const;
+	void UpdateInternal(bool shape_applied);
 
 	void ForceUpdate()
 	{
@@ -99,6 +87,7 @@ protected:
 	void BGEDeformVerts();
 
 	virtual void UpdateTransverts();
+	void UpdateDisplayArrays();
 };
 
 #endif  /* __BL_SKINDEFORMER_H__ */

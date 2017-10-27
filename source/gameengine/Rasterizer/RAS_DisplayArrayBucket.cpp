@@ -144,10 +144,6 @@ bool RAS_DisplayArrayBucket::UseBatching() const
 
 void RAS_DisplayArrayBucket::UpdateActiveMeshSlots(RAS_Rasterizer *rasty)
 {
-	if (m_deformer) {
-		m_deformer->Apply(m_meshMaterial, m_displayArray);
-	}
-
 	if (m_displayArray) {
 		const unsigned short modifiedFlag = m_displayArray->GetModifiedFlag();
 		if (modifiedFlag & RAS_IDisplayArray::MESH_MODIFIED) {

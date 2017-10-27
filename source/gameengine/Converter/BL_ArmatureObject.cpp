@@ -510,7 +510,6 @@ double BL_ArmatureObject::GetLastFrame()
 
 bool BL_ArmatureObject::GetBoneMatrix(Bone *bone, MT_Matrix4x4& matrix)
 {
-	ApplyPose();
 	bPoseChannel *pchan = BKE_pose_channel_find_name(m_objArma->pose, bone->name);
 	if (pchan) {
 		matrix.setValue(&pchan->pose_mat[0][0]);

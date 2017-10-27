@@ -138,7 +138,7 @@ bool BL_ShapeDeformer::LoadShapeDrivers(KX_GameObject *parent)
 
 bool BL_ShapeDeformer::ExecuteShapeDrivers()
 {
-	if (m_useShapeDrivers && PoseUpdated()) {
+	if (m_useShapeDrivers) {
 		// We don't need an actual time, just use 0
 		BKE_animsys_evaluate_animdata(nullptr, &GetKey()->id, GetKey()->adt, 0.f, ADT_RECALC_DRIVERS);
 
@@ -149,7 +149,7 @@ bool BL_ShapeDeformer::ExecuteShapeDrivers()
 	return false;
 }
 
-bool BL_ShapeDeformer::Update()
+void BL_ShapeDeformer::Update()
 {
 	bool bShapeUpdate = false;
 	bool bSkinUpdate = false;
@@ -190,9 +190,9 @@ bool BL_ShapeDeformer::Update()
 		bShapeUpdate = true;
 	}
 	// check for armature deform
-	bSkinUpdate = BL_SkinDeformer::UpdateInternal(bShapeUpdate && m_bDynamic);
+	BL_SkinDeformer::UpdateInternal(bShapeUpdate && m_bDynamic);
 
-	// non dynamic deformer = Modifer without armature and shape keys, no need to create storage
+	/*// non dynamic deformer = Modifer without armature and shape keys, no need to create storage
 	if (!bSkinUpdate && bShapeUpdate && m_bDynamic) {
 		// this means that there is no armature, we still need to
 		// update the normal (was not done after shape key calculation)
@@ -201,9 +201,12 @@ bool BL_ShapeDeformer::Update()
 		// We also need to handle transverts now (used to be in BL_SkinDeformer::Apply())
 		UpdateTransverts();
 		bSkinUpdate = true;
-	}
+	} TODO */
+}
 
-	return bSkinUpdate;
+bool BL_ShapeDeformer::NeedUpdate() const
+{
+	return (BL_SkinDeformer::NeedUpdate() || m_lastShapeUpdate != m_gameobj->GetLastFrame());
 }
 
 Key *BL_ShapeDeformer::GetKey()

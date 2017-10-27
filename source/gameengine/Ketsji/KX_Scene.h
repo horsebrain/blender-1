@@ -92,6 +92,7 @@ class RAS_2DFilterManager;
 class KX_2DFilterManager;
 class SCA_JoystickManager;
 class btCollisionShape;
+class BL_ArmatureObject;
 class BL_BlenderSceneConverter;
 struct KX_ClientObjectInfo;
 class KX_ObstacleSimulation;
@@ -160,6 +161,7 @@ protected:
 	EXP_ListValue<KX_GameObject> *m_inactivelist;	// all objects that are not in the active layer
 	/// All animated objects, no need of EXP_ListValue because the list isn't exposed in python.
 	std::vector<KX_GameObject *> m_animatedlist;
+	std::vector<BL_ArmatureObject *> m_armatureList;
 
 	/// The set of cameras for this scene
 	EXP_ListValue<KX_Camera> *m_cameralist;
@@ -356,6 +358,7 @@ public:
 	bool NewRemoveObject(KX_GameObject *gameobj);
 
 	void AddAnimatedObject(KX_GameObject *gameobj);
+	void AddArmatureObject(BL_ArmatureObject *armature);
 
 	/**
 	 * \section Logic stuff

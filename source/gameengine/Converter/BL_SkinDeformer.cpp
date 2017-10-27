@@ -114,27 +114,6 @@ void BL_SkinDeformer::Relink(std::map<SCA_IObject *, SCA_IObject *>& map)
 	BL_MeshDeformer::Relink(map);
 }
 
-void BL_SkinDeformer::Apply(RAS_MeshMaterial *meshmat, RAS_IDisplayArray *array)
-{
-	if (!meshmat) {
-		return;
-	}
-
-	RAS_IDisplayArray *origarray = meshmat->GetDisplayArray();
-
-	const short modifiedFlag = origarray->GetModifiedFlag();
-	// No modifications ?
-	if (modifiedFlag == RAS_IDisplayArray::NONE_MODIFIED) {
-		return;
-	}
-
-	/// Update vertex data from the original mesh.
-	array->UpdateFrom(origarray, modifiedFlag &
-					 (RAS_IDisplayArray::TANGENT_MODIFIED |
-					  RAS_IDisplayArray::UVS_MODIFIED |
-					  RAS_IDisplayArray::COLORS_MODIFIED));
-}
-
 RAS_Deformer *BL_SkinDeformer::GetReplica()
 {
 	BL_SkinDeformer *result;
@@ -304,38 +283,56 @@ void BL_SkinDeformer::UpdateTransverts()
 		m_copyNormals = false;
 }
 
-bool BL_SkinDeformer::UpdateInternal(bool shape_applied)
+void BL_SkinDeformer::UpdateDisplayArrays()
 {
-	/* See if the armature has been updated for this frame */
-	if (PoseUpdated()) {
-		if (!shape_applied) {
-			/* store verts locally */
-			VerifyStorage();
+	for (unsigned short i = 0, size = m_displayArrayList.size(); i < size; ++i) {
+		RAS_IDisplayArray *origarray = m_mesh->GetDisplayArray(i);
+
+		const short modifiedFlag = origarray->GetModifiedFlag();
+		// No modifications ?
+		if (modifiedFlag == RAS_IDisplayArray::NONE_MODIFIED) {
+			continue;
 		}
 
-		m_armobj->ApplyPose();
-
-		if (m_armobj->GetVertDeformType() == ARM_VDEF_BGE_CPU)
-			BGEDeformVerts();
-		else
-			BlenderDeformVerts();
-
-		/* Update the current frame */
-		m_lastArmaUpdate = m_armobj->GetLastFrame();
-
-		/* dynamic vertex, cannot use display list */
-		m_bDynamic = true;
-
-		UpdateTransverts();
-
-		/* indicate that the m_transverts and normals are up to date */
-		return true;
+		RAS_IDisplayArray *array = m_displayArrayList[i];
+		/// Update vertex data from the original mesh.
+		array->UpdateFrom(origarray, modifiedFlag &
+					 (RAS_IDisplayArray::TANGENT_MODIFIED |
+					  RAS_IDisplayArray::UVS_MODIFIED |
+					  RAS_IDisplayArray::COLORS_MODIFIED));
 	}
-
-	return false;
 }
 
-bool BL_SkinDeformer::Update(void)
+void BL_SkinDeformer::UpdateInternal(bool shape_applied)
 {
-	return UpdateInternal(false);
+	if (!shape_applied) {
+		/* store verts locally */
+		VerifyStorage();
+	}
+
+	if (m_armobj->GetVertDeformType() == ARM_VDEF_BGE_CPU)
+		BGEDeformVerts();
+	else
+		BlenderDeformVerts();
+
+	/* Update the current frame */
+	m_lastArmaUpdate = m_armobj->GetLastFrame();
+
+	/* dynamic vertex, cannot use display list */
+	m_bDynamic = true;
+
+	UpdateTransverts();
+
+	UpdateDisplayArrays();
+}
+
+void BL_SkinDeformer::Update(void)
+{
+	UpdateInternal(false);
+}
+
+bool BL_SkinDeformer::NeedUpdate() const
+{
+	// See if the armature has been updated for this frame.
+	return (m_armobj && m_lastArmaUpdate != m_armobj->GetLastFrame());
 }

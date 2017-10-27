@@ -1554,7 +1554,7 @@ void BL_ConvertBlenderObjects(struct Main *maggie,
 	 */
 	for (KX_GameObject *gameobj : sumolist) {
 		if (gameobj->GetDeformer()) {
-			gameobj->GetDeformer()->UpdateBuckets();
+			gameobj->GetDeformer()->Update();
 		}
 	}
 

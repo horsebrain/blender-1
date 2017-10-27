@@ -51,14 +51,15 @@
 
 KX_SoftBodyDeformer::KX_SoftBodyDeformer(RAS_MeshObject *pMeshObject, BL_DeformableGameObject *gameobj)
 	:RAS_Deformer(pMeshObject),
-	m_gameobj(gameobj),
-	m_needUpdateAabb(true)
+	m_gameobj(gameobj)
 {
 	KX_Scene *scene = m_gameobj->GetScene();
 	RAS_BoundingBoxManager *boundingBoxManager = scene->GetBoundingBoxManager();
 	m_boundingBox = boundingBoxManager->CreateBoundingBox();
 	// Set AABB default to mesh bounding box AABB.
 	m_boundingBox->CopyAabb(m_mesh->GetBoundingBox());
+
+	m_bDynamic = true;
 }
 
 KX_SoftBodyDeformer::~KX_SoftBodyDeformer()
@@ -79,7 +80,7 @@ void KX_SoftBodyDeformer::Relink(std::map<SCA_IObject *, SCA_IObject *>& map)
 	}
 }
 
-void KX_SoftBodyDeformer::Apply(RAS_MeshMaterial *meshmat, RAS_IDisplayArray *array)
+void KX_SoftBodyDeformer::Update()
 {
 	CcdPhysicsController *ctrl = (CcdPhysicsController *)m_gameobj->GetPhysicsController();
 	if (!ctrl)
@@ -89,62 +90,61 @@ void KX_SoftBodyDeformer::Apply(RAS_MeshMaterial *meshmat, RAS_IDisplayArray *ar
 	if (!softBody)
 		return;
 
-	// update the vertex in m_transverts
-	Update();
-
-	RAS_IDisplayArray *origarray = meshmat->GetDisplayArray();
-
 	btSoftBody::tNodeArray&   nodes(softBody->m_nodes);
 	const std::vector<unsigned int>& indices = ctrl->GetSoftBodyIndices();
-
-	if (m_needUpdateAabb) {
-		m_boundingBox->SetAabb(MT_Vector3(0.0f, 0.0f, 0.0f), MT_Vector3(0.0f, 0.0f, 0.0f));
-		m_needUpdateAabb = false;
-	}
 
 	// AABB Box : min/max.
 	MT_Vector3 aabbMin(FLT_MAX, FLT_MAX, FLT_MAX);
 	MT_Vector3 aabbMax(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
-	for (unsigned int i = 0, size = array->GetVertexCount(); i < size; ++i) {
-		RAS_IVertex *v = array->GetVertex(i);
-		const RAS_VertexInfo& vinfo = array->GetVertexInfo(i);
+	const MT_Vector3& scale = m_gameobj->NodeGetWorldScaling();
+	const MT_Vector3& invertscale = MT_Vector3(1.0f / scale.x(), 1.0f / scale.y(), 1.0f / scale.z());
+	const MT_Vector3& pos = m_gameobj->NodeGetWorldPosition();
+	const MT_Matrix3x3& rot = m_gameobj->NodeGetWorldOrientation();
 
-		const unsigned int index = indices[vinfo.getOrigIndex()];
-		const MT_Vector3 pt(ToMoto(nodes[index].m_x));
-		v->SetXYZ(pt);
+	for (unsigned short i = 0, size = m_displayArrayList.size(); i < size; ++i) {
+		RAS_IDisplayArray *origarray = m_mesh->GetDisplayArray(i);
+		RAS_IDisplayArray *array = m_displayArrayList[i];
 
-		const MT_Vector3 normal(ToMoto(nodes[index].m_n));
-		v->SetNormal(normal);
+		for (unsigned int i = 0, size = array->GetVertexCount(); i < size; ++i) {
+			RAS_IVertex *v = array->GetVertex(i);
+			const RAS_VertexInfo& vinfo = array->GetVertexInfo(i);
 
-		if (!m_gameobj->GetAutoUpdateBounds()) {
-			continue;
+			const unsigned int index = indices[vinfo.getOrigIndex()];
+			const MT_Vector3 pt(ToMoto(nodes[index].m_x));
+			v->SetXYZ(pt);
+
+			const MT_Vector3 normal(ToMoto(nodes[index].m_n));
+			v->SetNormal(normal);
+
+			if (!m_gameobj->GetAutoUpdateBounds()) {
+				continue;
+			}
+
+			// Extract object transform from the vertex position.
+			const MT_Vector3 ptWorld = (pt - pos) * rot * invertscale;
+			// if the AABB need an update.
+			aabbMin.x() = std::min(aabbMin.x(), ptWorld.x());
+			aabbMin.y() = std::min(aabbMin.y(), ptWorld.y());
+			aabbMin.z() = std::min(aabbMin.z(), ptWorld.z());
+			aabbMax.x() = std::max(aabbMax.x(), ptWorld.x());
+			aabbMax.y() = std::max(aabbMax.y(), ptWorld.y());
+			aabbMax.z() = std::max(aabbMax.z(), ptWorld.z());
 		}
 
-		const MT_Vector3& scale = m_gameobj->NodeGetWorldScaling();
-		const MT_Vector3& invertscale = MT_Vector3(1.0f / scale.x(), 1.0f / scale.y(), 1.0f / scale.z());
-		const MT_Vector3& pos = m_gameobj->NodeGetWorldPosition();
-		const MT_Matrix3x3& rot = m_gameobj->NodeGetWorldOrientation();
+		array->UpdateFrom(origarray, origarray->GetModifiedFlag() &
+						(RAS_IDisplayArray::TANGENT_MODIFIED |
+						RAS_IDisplayArray::UVS_MODIFIED |
+						RAS_IDisplayArray::COLORS_MODIFIED));
 
-		// Extract object transform from the vertex position.
-		const MT_Vector3 ptWorld = (pt - pos) * rot * invertscale;
-		// if the AABB need an update.
-		aabbMin.x() = std::min(aabbMin.x(), ptWorld.x());
-		aabbMin.y() = std::min(aabbMin.y(), ptWorld.y());
-		aabbMin.z() = std::min(aabbMin.z(), ptWorld.z());
-		aabbMax.x() = std::max(aabbMax.x(), ptWorld.x());
-		aabbMax.y() = std::max(aabbMax.y(), ptWorld.y());
-		aabbMax.z() = std::max(aabbMax.z(), ptWorld.z());
+		array->SetModifiedFlag(RAS_IDisplayArray::POSITION_MODIFIED | RAS_IDisplayArray::NORMAL_MODIFIED);
 	}
+	m_boundingBox->SetAabb(aabbMin, aabbMax);
+}
 
-	array->UpdateFrom(origarray, origarray->GetModifiedFlag() &
-					 (RAS_IDisplayArray::TANGENT_MODIFIED |
-					  RAS_IDisplayArray::UVS_MODIFIED |
-					  RAS_IDisplayArray::COLORS_MODIFIED));
-
-	m_boundingBox->ExtendAabb(aabbMin, aabbMax);
-
-	array->SetModifiedFlag(RAS_IDisplayArray::POSITION_MODIFIED | RAS_IDisplayArray::NORMAL_MODIFIED);
+bool KX_SoftBodyDeformer::NeedUpdate() const
+{
+	return true;
 }
 
 #endif
