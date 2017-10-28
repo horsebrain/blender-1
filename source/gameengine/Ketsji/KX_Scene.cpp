@@ -1332,7 +1332,7 @@ void KX_Scene::UpdateAnimations(double curtime)
 {
 	struct AnimationTaskSet : enki::ITaskSet
 	{
-		const std::vector<KX_GameObject *>& m_animatedObjects;
+		std::vector<KX_GameObject *> m_animatedObjects; // TODO check random.
 		double m_curtime;
 
 		AnimationTaskSet(const std::vector<KX_GameObject *>& animatedObjects, double curtime)
@@ -1340,6 +1340,7 @@ void KX_Scene::UpdateAnimations(double curtime)
 			m_animatedObjects(animatedObjects),
 			m_curtime(curtime)
 		{
+			std::random_shuffle(m_animatedObjects.begin(), m_animatedObjects.end());
 		}
 
 		virtual void ExecuteRange(enki::TaskSetPartition range, uint32_t UNUSED(threadnum))
