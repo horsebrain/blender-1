@@ -67,7 +67,7 @@ protected:
 	/** Polygon centers cache used to sort polygons depending on depth.
 	 * This list is stored here because we store per array not per entire mesh.
 	 */
-	std::vector<mt::vec3> m_polygonCenters;
+	std::vector<mt::vec3, mt::simd_allocator<mt::vec3> > m_polygonCenters;
 
 public:
 	RAS_IDisplayArray(PrimitiveType type, const RAS_VertexFormat& format);
