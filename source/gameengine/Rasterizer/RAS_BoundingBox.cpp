@@ -110,7 +110,7 @@ void RAS_BoundingBox::SetAabb(const mt::vec3& aabbMin, const mt::vec3& aabbMax)
 void RAS_BoundingBox::ExtendAabb(const mt::vec3& aabbMin, const mt::vec3& aabbMax)
 {
 	m_aabbMin = mt::vec3::Min(m_aabbMin, aabbMin);
-	m_aabbMax = mt::vec3::Max(m_aabbMax, aabbMin);
+	m_aabbMax = mt::vec3::Max(m_aabbMax, aabbMax);
 	m_modified = true;
 }
 
@@ -124,7 +124,7 @@ void RAS_BoundingBox::Update(bool force)
 {
 }
 
-RAS_MeshBoundingBox::RAS_MeshBoundingBox(RAS_BoundingBoxManager *manager, const RAS_IDisplayArrayList displayArrayList)
+RAS_MeshBoundingBox::RAS_MeshBoundingBox(RAS_BoundingBoxManager *manager, const RAS_IDisplayArrayList& displayArrayList)
 	:RAS_BoundingBox(manager),
 	m_displayArrayList(displayArrayList)
 {
@@ -156,8 +156,8 @@ void RAS_MeshBoundingBox::Update(bool force)
 		return;
 	}
 
-	m_aabbMin = mt::vec3(FLT_MAX, FLT_MAX, FLT_MAX);
-	m_aabbMax = mt::vec3(FLT_MIN, FLT_MIN, FLT_MIN);
+	m_aabbMin = mt::vec3(FLT_MAX);
+	m_aabbMax = mt::vec3(-FLT_MAX);
 
 	for (RAS_IDisplayArray *displayArray : m_displayArrayList) {
 		// For each vertex.

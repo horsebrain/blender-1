@@ -263,8 +263,8 @@ void BL_SkinDeformer::UpdateTransverts()
 	}
 
 	// AABB Box : min/max.
-	mt::vec3 aabbMin(FLT_MAX, FLT_MAX, FLT_MAX);
-	mt::vec3 aabbMax(FLT_MIN, FLT_MIN, FLT_MIN);
+	mt::vec3 aabbMin(FLT_MAX);
+	mt::vec3 aabbMax(-FLT_MAX);
 
 	// the vertex cache is unique to this deformer, no need to update it
 	// if it wasn't updated! We must update all the materials at once

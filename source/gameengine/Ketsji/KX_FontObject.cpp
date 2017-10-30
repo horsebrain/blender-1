@@ -224,8 +224,8 @@ void KX_FontObject::GetTextAabb(mt::vec2& min, mt::vec2& max)
 
 	BLF_size(m_fontid, size, m_dpi);
 
-	min = mt::vec2(FLT_MAX, FLT_MAX);
-	max = mt::vec2(FLT_MIN, FLT_MIN);
+	min = mt::vec2(FLT_MAX);
+	max = mt::vec2(-FLT_MAX);
 
 	for (unsigned short i = 0, size = m_texts.size(); i < size; ++i) {
 		rctf box;

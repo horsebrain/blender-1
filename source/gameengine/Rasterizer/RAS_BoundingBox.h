@@ -86,7 +86,7 @@ private:
 	RAS_IDisplayArrayList m_displayArrayList;
 
 public:
-	RAS_MeshBoundingBox(RAS_BoundingBoxManager *manager, const RAS_IDisplayArrayList displayArrayList);
+	RAS_MeshBoundingBox(RAS_BoundingBoxManager *manager, const RAS_IDisplayArrayList& displayArrayList);
 	virtual ~RAS_MeshBoundingBox();
 
 	virtual RAS_BoundingBox *GetReplica();

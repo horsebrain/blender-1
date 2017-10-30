@@ -98,8 +98,8 @@ void KX_SoftBodyDeformer::Apply(RAS_MeshMaterial *meshmat, RAS_IDisplayArray *ar
 	const std::vector<unsigned int>& indices = ctrl->GetSoftBodyIndices();
 
 	// AABB Box : min/max.
-	mt::vec3 aabbMin(FLT_MAX, FLT_MAX, FLT_MAX);
-	mt::vec3 aabbMax(FLT_MIN, FLT_MIN, FLT_MIN);
+	mt::vec3 aabbMin(FLT_MAX);
+	mt::vec3 aabbMax(-FLT_MAX);
 
 	if (m_needUpdateAabb) {
 		m_boundingBox->SetAabb(aabbMin, aabbMax);
