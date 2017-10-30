@@ -99,14 +99,14 @@ void RAS_OpenGLDebugDraw::Flush(RAS_Rasterizer *rasty, RAS_ICanvas *canvas, RAS_
 	// Draw boxes.
 	static const GLubyte wireIndices[24] = {0, 1, 1, 2, 2, 3, 3, 0, 0, 4, 4, 5, 5, 6, 6, 7, 7, 4, 1, 5, 2, 6, 3, 7};
 	for (const RAS_DebugDraw::Box& box : debugDraw->m_boxes) {
-		glVertexPointer(3, GL_FLOAT, sizeof(mt::vec3), box.m_vertices.data());
+		glVertexPointer(3, GL_FLOAT, sizeof(float) * 3, box.m_vertices.data());
 		glColor4fv(box.m_color);
 		glDrawRangeElements(GL_LINES, 0, 7, 24, GL_UNSIGNED_BYTE, wireIndices);
 	}
 
 	static const GLubyte solidIndices[24] = {0, 1, 2, 3, 7, 6, 5, 4, 4, 5, 1, 0, 3, 2, 6, 7, 3, 7, 4, 0, 1, 5, 6, 2};
 	for (const RAS_DebugDraw::SolidBox& box : debugDraw->m_solidBoxes) {
-		glVertexPointer(3, GL_FLOAT, sizeof(mt::vec3), box.m_vertices.data());
+		glVertexPointer(3, GL_FLOAT, sizeof(float) * 3, box.m_vertices.data());
 		glColor4fv(box.m_color);
 		glDrawRangeElements(GL_LINES, 0, 7, 24, GL_UNSIGNED_BYTE, wireIndices);
 
