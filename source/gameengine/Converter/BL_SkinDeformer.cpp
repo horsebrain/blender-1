@@ -276,17 +276,15 @@ void BL_SkinDeformer::UpdateTransverts()
 			RAS_IVertex *v = array->GetVertex(i);
 			const RAS_VertexInfo& vinfo = array->GetVertexInfo(i);
 			v->SetXYZ(m_transverts[vinfo.getOrigIndex()].data());
-			if (m_copyNormals)
+			if (m_copyNormals) {
 				v->SetNormal(m_transnors[vinfo.getOrigIndex()].data());
-
-			mt::vec3 vertpos = v->xyz();
-
-			if (!m_gameobj->GetAutoUpdateBounds()) {
-				continue;
 			}
 
-			aabbMin = mt::vec3::Min(aabbMin, vertpos);
-			aabbMax = mt::vec3::Max(aabbMax, vertpos);
+			if (m_gameobj->GetAutoUpdateBounds()) {
+				const mt::vec3 vertpos = v->xyz();
+				aabbMin = mt::vec3::Min(aabbMin, vertpos);
+				aabbMax = mt::vec3::Max(aabbMax, vertpos);
+			}
 		}
 
 		array->SetModifiedFlag(RAS_IDisplayArray::POSITION_MODIFIED | RAS_IDisplayArray::NORMAL_MODIFIED);

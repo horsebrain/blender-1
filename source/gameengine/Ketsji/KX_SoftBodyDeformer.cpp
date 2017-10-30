@@ -97,19 +97,16 @@ void KX_SoftBodyDeformer::Apply(RAS_MeshMaterial *meshmat, RAS_IDisplayArray *ar
 	btSoftBody::tNodeArray&   nodes(softBody->m_nodes);
 	const std::vector<unsigned int>& indices = ctrl->GetSoftBodyIndices();
 
-	if (m_needUpdateAabb) {
-		m_boundingBox->SetAabb(mt::zero3, mt::zero3);
-		m_needUpdateAabb = false;
-	}
-
 	// AABB Box : min/max.
 	mt::vec3 aabbMin(FLT_MAX, FLT_MAX, FLT_MAX);
 	mt::vec3 aabbMax(FLT_MIN, FLT_MIN, FLT_MIN);
 
-	const mt::vec3& scale = m_gameobj->NodeGetWorldScaling();
-	const mt::vec3 invertscale(1.0f / scale.x, 1.0f / scale.y, 1.0f / scale.z);
-	const mt::vec3& pos = m_gameobj->NodeGetWorldPosition();
-	const mt::mat3& rot = m_gameobj->NodeGetWorldOrientation();
+	if (m_needUpdateAabb) {
+		m_boundingBox->SetAabb(aabbMin, aabbMax);
+		m_needUpdateAabb = false;
+	}
+
+	const mt::mat3x4 invtrans = m_gameobj->NodeGetWorldTransform().Inverse();
 	const bool autoUpdate = m_gameobj->GetAutoUpdateBounds();
 
 	for (unsigned int i = 0, size = array->GetVertexCount(); i < size; ++i) {
@@ -123,15 +120,12 @@ void KX_SoftBodyDeformer::Apply(RAS_MeshMaterial *meshmat, RAS_IDisplayArray *ar
 		const mt::vec3 normal(ToMoto(nodes[index].m_n));
 		v->SetNormal(normal);
 
-		if (!autoUpdate) {
-			continue;
+		if (autoUpdate) {
+			// Extract object transform from the vertex position.
+			const mt::vec3 ptWorld = invtrans * pt;
+			aabbMin = mt::vec3::Min(aabbMin, ptWorld);
+			aabbMax = mt::vec3::Max(aabbMax, ptWorld);
 		}
-
-		// Extract object transform from the vertex position.
-		const mt::vec3 ptWorld = (pt - pos) * rot * invertscale;
-		// if the AABB need an update.
-		aabbMin = mt::vec3::Min(aabbMin, ptWorld);
-		aabbMax = mt::vec3::Max(aabbMax, ptWorld);
 	}
 
 	array->UpdateFrom(origarray, origarray->GetModifiedFlag() &

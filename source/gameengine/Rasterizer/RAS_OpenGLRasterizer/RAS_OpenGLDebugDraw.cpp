@@ -61,7 +61,7 @@ void RAS_OpenGLDebugDraw::Flush(RAS_Rasterizer *rasty, RAS_ICanvas *canvas, RAS_
 		float mat[16] = {
 			rot[0], rot[1], rot[2], 0.0f,
 			rot[3], rot[4], rot[5], 0.0f,
-			rot[6], rot[4], rot[8], 0.0f,
+			rot[6], rot[7], rot[8], 0.0f,
 			pos[0], pos[1], pos[2], 1.0f
 		};
 		rasty->PushMatrix();
