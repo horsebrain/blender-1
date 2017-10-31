@@ -60,8 +60,7 @@ public:
 	virtual void Relink(std::map<SCA_IObject *, SCA_IObject *>& map);
 
 	double GetLastFrame() const;
-
-	bool SetActiveAction(short priority, double curtime);
+	void SetLastFrame(double curtime);
 	bool GetShape(std::vector<float> &shape);
 
 	void SetDeformer(RAS_Deformer *deformer);
