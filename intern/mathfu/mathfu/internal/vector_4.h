@@ -69,25 +69,25 @@ class Vector<T, 4> {
     MATHFU_VECTOR_OPERATION(data_[i] = vector.data[i]);
   }
 
-  inline T& operator()(const int i) { return data_[i]; }
+  inline T& operator()(const int i) WARN_UNUSED_RESULT { return data_[i]; }
 
-  inline const T& operator()(const int i) const { return data_[i]; }
+  inline const T& operator()(const int i) const WARN_UNUSED_RESULT { return data_[i]; }
 
-  inline T& operator[](const int i) { return data_[i]; }
+  inline T& operator[](const int i) WARN_UNUSED_RESULT { return data_[i]; }
 
-  inline const T& operator[](const int i) const { return data_[i]; }
+  inline const T& operator[](const int i) const WARN_UNUSED_RESULT { return data_[i]; }
 
-  inline Vector<T, 3> xyz() { return Vector<T, 3>(x, y, z); }
+  inline Vector<T, 3> xyz() WARN_UNUSED_RESULT { return Vector<T, 3>(x, y, z); }
 
-  inline const Vector<T, 3> xyz() const { return Vector<T, 3>(x, y, z); }
+  inline const Vector<T, 3> xyz() const WARN_UNUSED_RESULT { return Vector<T, 3>(x, y, z); }
 
-  inline Vector<T, 2> xy() { return Vector<T, 2>(x, y); }
+  inline Vector<T, 2> xy() WARN_UNUSED_RESULT { return Vector<T, 2>(x, y); }
 
-  inline const Vector<T, 2> xy() const { return Vector<T, 2>(x, y); }
+  inline const Vector<T, 2> xy() const WARN_UNUSED_RESULT { return Vector<T, 2>(x, y); }
 
-  inline Vector<T, 2> zw() { return Vector<T, 2>(z, w); }
+  inline Vector<T, 2> zw() WARN_UNUSED_RESULT { return Vector<T, 2>(z, w); }
 
-  inline const Vector<T, 2> zw() const { return Vector<T, 2>(z, w); }
+  inline const Vector<T, 2> zw() const WARN_UNUSED_RESULT { return Vector<T, 2>(z, w); }
 
   inline void Pack(VectorPacked<T, 4>* const vector) const {
     MATHFU_VECTOR_OPERATION(vector->data[i] = data_[i]);
@@ -97,61 +97,61 @@ class Vector<T, 4> {
     MATHFU_VECTOR_OPERATION(a[i] = data_[i]);
   }
 
-  inline const T (&Data() const)[4] {
+  inline const T (&Data() const)[4] WARN_UNUSED_RESULT {
     return data_;
   }
 
-  inline T LengthSquared() const { return LengthSquaredHelper(*this); }
+  inline T LengthSquared() const WARN_UNUSED_RESULT { return LengthSquaredHelper(*this); }
 
-  inline T Length() const { return LengthHelper(*this); }
+  inline T Length() const WARN_UNUSED_RESULT { return LengthHelper(*this); }
 
   inline T Normalize() { return NormalizeHelper(*this); }
 
-  inline Vector<T, 4> Normalized() const { return NormalizedHelper(*this); }
+  inline Vector<T, 4> Normalized() const WARN_UNUSED_RESULT { return NormalizedHelper(*this); }
 
-  inline Vector<T, 4> SafeNormalized(const Vector<T, 4>& v) const {
+  inline Vector<T, 4> SafeNormalized(const Vector<T, 4>& v) const WARN_UNUSED_RESULT {
     return SafeNormalizedHelper(*this, v);
   }
 
-  static inline bool FuzzyZero(const Vector<T, 3>& v) {
+  static inline WARN_UNUSED_RESULT bool FuzzyZero(const Vector<T, 3>& v) {
     return FuzzyZeroHelper(v);
   }
 
   template <typename CompatibleT>
-  static inline Vector<T, 4> FromType(const CompatibleT& compatible) {
+  static inline WARN_UNUSED_RESULT Vector<T, 4> FromType(const CompatibleT& compatible) {
     return FromTypeHelper<T, d, CompatibleT>(compatible);
   }
 
   template <typename CompatibleT>
-  static inline CompatibleT ToType(const Vector<T, 4>& v) {
+  static inline WARN_UNUSED_RESULT CompatibleT ToType(const Vector<T, 4>& v) {
     return ToTypeHelper<T, d, CompatibleT>(v);
   }
 
-  static inline T DotProduct(const Vector<T, 4>& v1, const Vector<T, 4>& v2) {
+  static inline WARN_UNUSED_RESULT T DotProduct(const Vector<T, 4>& v1, const Vector<T, 4>& v2) {
     return DotProductHelper(v1, v2);
   }
 
-  static inline Vector<T, 4> HadamardProduct(const Vector<T, 4>& v1,
+  static inline WARN_UNUSED_RESULT Vector<T, 4> HadamardProduct(const Vector<T, 4>& v1,
                                              const Vector<T, 4>& v2) {
     return HadamardProductHelper(v1, v2);
   }
 
-  static inline Vector<T, 4> Lerp(const Vector<T, 4>& v1,
+  static inline WARN_UNUSED_RESULT Vector<T, 4> Lerp(const Vector<T, 4>& v1,
                                   const Vector<T, 4>& v2, const T percent) {
     return LerpHelper(v1, v2, percent);
   }
 
-  static inline Vector<T, 4> RandomInRange(const Vector<T, 4>& min,
+  static inline WARN_UNUSED_RESULT Vector<T, 4> RandomInRange(const Vector<T, 4>& min,
                                            const Vector<T, 4>& max) {
     return RandomInRangeHelper(min, max);
   }
 
-  static inline Vector<T, 4> Max(const Vector<T, 4>& v1,
+  static inline WARN_UNUSED_RESULT Vector<T, 4> Max(const Vector<T, 4>& v1,
                                  const Vector<T, 4>& v2) {
     return MaxHelper(v1, v2);
   }
 
-  static inline Vector<T, 4> Min(const Vector<T, 4>& v1,
+  static inline WARN_UNUSED_RESULT Vector<T, 4> Min(const Vector<T, 4>& v1,
                                  const Vector<T, 4>& v2) {
     return MinHelper(v1, v2);
   }

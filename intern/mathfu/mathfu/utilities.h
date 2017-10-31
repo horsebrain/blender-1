@@ -644,6 +644,12 @@ public:
 	MATHFU_DEFINE_CLASS_SIMD_AWARE_NEW_DELETE
 };
 
+#if defined(__GNUC__)
+#  define WARN_UNUSED_RESULT __attribute__((warn_unused_result))
+#else
+#  define WARN_UNUSED_RESULT
+#endif
+
 /// @}
 
 }  // namespace mathfu

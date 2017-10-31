@@ -112,17 +112,17 @@ class Vector<float, 3> {
 #endif  // MATHFU_COMPILE_WITH_PADDING
   }
 
-  inline float& operator()(const int i) { return data_[i]; }
+  inline float& operator()(const int i) WARN_UNUSED_RESULT { return data_[i]; }
 
-  inline const float& operator()(const int i) const { return data_[i]; }
+  inline const float& operator()(const int i) const WARN_UNUSED_RESULT { return data_[i]; }
 
-  inline float& operator[](const int i) { return data_[i]; }
+  inline float& operator[](const int i) WARN_UNUSED_RESULT { return data_[i]; }
 
-  inline const float& operator[](const int i) const { return data_[i]; }
+  inline const float& operator[](const int i) const WARN_UNUSED_RESULT { return data_[i]; }
 
   /// GLSL style multi-component accessors.
-  inline Vector<float, 2> xy() { return Vector<float, 2>(x, y); }
-  inline const Vector<float, 2> xy() const { return Vector<float, 2>(x, y); }
+  inline Vector<float, 2> xy() WARN_UNUSED_RESULT { return Vector<float, 2>(x, y); }
+  inline const Vector<float, 2> xy() const WARN_UNUSED_RESULT { return Vector<float, 2>(x, y); }
 
   inline void Pack(VectorPacked<float, 3>* const vector) const {
 #ifdef MATHFU_COMPILE_WITH_PADDING
@@ -144,7 +144,7 @@ class Vector<float, 3> {
 #endif  // MATHFU_COMPILE_WITH_PADDING
   }
 
-  inline const float (&Data() const)[3] {
+  inline const float (&Data() const)[3] WARN_UNUSED_RESULT {
     return reinterpret_cast<const float (&)[3]>(data_);
   }
 
@@ -244,12 +244,12 @@ class Vector<float, 3> {
     return !operator==(v);
   }
 
-  inline float LengthSquared() const {
+  inline float LengthSquared() const WARN_UNUSED_RESULT {
     return simd4f_dot3_scalar(MATHFU_VECTOR3_LOAD3(*this),
                               MATHFU_VECTOR3_LOAD3(*this));
   }
 
-  inline float Length() const {
+  inline float Length() const WARN_UNUSED_RESULT {
     return simd4f_get_x(simd4f_length3(MATHFU_VECTOR3_LOAD3(*this)));
   }
 
@@ -259,50 +259,50 @@ class Vector<float, 3> {
     return length;
   }
 
-  inline Vector<float, 3> Normalized() const {
+  inline Vector<float, 3> Normalized() const WARN_UNUSED_RESULT {
     return Vector<float, 3>(simd4f_normalize3(MATHFU_VECTOR3_LOAD3(*this)));
   }
 
-  inline Vector<float, 3> SafeNormalized(const Vector<float, 3>& v) const {
+  inline Vector<float, 3> SafeNormalized(const Vector<float, 3>& v) const WARN_UNUSED_RESULT {
     if (FuzzyZeroHelper(Length())) {
       return v;
     }
     return Normalized();
   }
 
-  static inline bool FuzzyZero(const Vector<float, 3>& v) {
+  static inline WARN_UNUSED_RESULT bool FuzzyZero(const Vector<float, 3>& v) {
     return FuzzyZeroHelper(v);
   }
 
   template <typename CompatibleT>
-  static inline Vector<float, 3> FromType(const CompatibleT& compatible) {
+  static inline WARN_UNUSED_RESULT Vector<float, 3> FromType(const CompatibleT& compatible) {
     return FromTypeHelper<float, 3, CompatibleT>(compatible);
   }
 
   template <typename CompatibleT>
-  static inline CompatibleT ToType(const Vector<float, 3>& v) {
+  static inline WARN_UNUSED_RESULT CompatibleT ToType(const Vector<float, 3>& v) {
     return ToTypeHelper<float, 3, CompatibleT>(v);
   }
 
-  static inline float DotProduct(const Vector<float, 3>& v1,
+  static inline WARN_UNUSED_RESULT float DotProduct(const Vector<float, 3>& v1,
                                  const Vector<float, 3>& v2) {
     return simd4f_dot3_scalar(MATHFU_VECTOR3_LOAD3(v1),
                               MATHFU_VECTOR3_LOAD3(v2));
   }
 
-  static inline Vector<float, 3> CrossProduct(const Vector<float, 3>& v1,
+  static inline WARN_UNUSED_RESULT Vector<float, 3> CrossProduct(const Vector<float, 3>& v1,
                                               const Vector<float, 3>& v2) {
     return Vector<float, 3>(
         simd4f_cross3(MATHFU_VECTOR3_LOAD3(v1), MATHFU_VECTOR3_LOAD3(v2)));
   }
 
-  static inline Vector<float, 3> HadamardProduct(const Vector<float, 3>& v1,
+  static inline WARN_UNUSED_RESULT Vector<float, 3> HadamardProduct(const Vector<float, 3>& v1,
                                                  const Vector<float, 3>& v2) {
     return Vector<float, 3>(
         simd4f_mul(MATHFU_VECTOR3_LOAD3(v1), MATHFU_VECTOR3_LOAD3(v2)));
   }
 
-  static inline Vector<float, 3> Lerp(const Vector<float, 3>& v1,
+  static inline WARN_UNUSED_RESULT Vector<float, 3> Lerp(const Vector<float, 3>& v1,
                                       const Vector<float, 3>& v2,
                                       float percent) {
     const Vector<float, 3> percentv(percent);
@@ -316,14 +316,14 @@ class Vector<float, 3> {
 
   /// Generates a random vector, where the range for each component is
   /// bounded by min and max.
-  static inline Vector<float, 3> RandomInRange(const Vector<float, 3>& min,
+  static inline WARN_UNUSED_RESULT Vector<float, 3> RandomInRange(const Vector<float, 3>& min,
                                                const Vector<float, 3>& max) {
     return Vector<float, 3>(mathfu::RandomInRange<float>(min[0], max[0]),
                             mathfu::RandomInRange<float>(min[1], max[1]),
                             mathfu::RandomInRange<float>(min[2], max[2]));
   }
 
-  static inline Vector<float, 3> Max(const Vector<float, 3>& v1,
+  static inline WARN_UNUSED_RESULT Vector<float, 3> Max(const Vector<float, 3>& v1,
                                      const Vector<float, 3>& v2) {
 #ifdef MATHFU_COMPILE_WITH_PADDING
     return Vector<float, 3>(
@@ -334,7 +334,7 @@ class Vector<float, 3> {
 #endif  // MATHFU_COMPILE_WITH_PADDING
   }
 
-  static inline Vector<float, 3> Min(const Vector<float, 3>& v1,
+  static inline WARN_UNUSED_RESULT Vector<float, 3> Min(const Vector<float, 3>& v1,
                                      const Vector<float, 3>& v2) {
 #ifdef MATHFU_COMPILE_WITH_PADDING
     return Vector<float, 3>(

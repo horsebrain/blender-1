@@ -138,19 +138,19 @@ class Matrix<float, 4> {
     MATHFU_MAT_OPERATION(simd4f_ustore4(data_[i].simd, &a[i * 4]));
   }
 
-  inline float (&Data() const)[4][4] {
+  inline float (&Data() const)[4][4] WARN_UNUSED_RESULT {
 	  return const_cast<float (&)[4][4]>(float_data_);
   }
 
-  inline Vector<float, 4>& GetColumn(const int i) {
+  inline Vector<float, 4>& GetColumn(const int i) WARN_UNUSED_RESULT {
     return data_[i];
   }
 
-  inline const Vector<float, 4>& GetColumn(const int i) const {
+  inline const Vector<float, 4>& GetColumn(const int i) const WARN_UNUSED_RESULT {
     return data_[i];
   }
 
-  inline Vector<float, 4> GetRow(const int i) const {
+  inline Vector<float, 4> GetRow(const int i) const WARN_UNUSED_RESULT {
     Vector<float, 4> v;
     for (int j = 0; j < 4; ++j) {
       v[j] = data_[j][i];
@@ -237,7 +237,7 @@ class Matrix<float, 4> {
     return return_v;
   }
 
-  inline Matrix<float, 4> Inverse() const {
+  inline Matrix<float, 4> Inverse() const WARN_UNUSED_RESULT {
     Matrix<float, 4> return_m;
     simd4x4f_inverse(&simd, &return_m.simd);
     return return_m;
@@ -252,21 +252,21 @@ class Matrix<float, 4> {
 
   /// Calculate the transpose of matrix.
   /// @return The transpose of the specified matrix.
-  inline Matrix<float, 4, 4> Transpose() const {
+  inline Matrix<float, 4, 4> Transpose() const WARN_UNUSED_RESULT {
     Matrix<float, 4, 4> transpose;
     simd4x4f_transpose(&simd, &transpose.simd);
     return transpose;
   }
 
-  inline Vector<float, 3> TranslationVector3D() const {
+  inline Vector<float, 3> TranslationVector3D() const WARN_UNUSED_RESULT {
     return Vector<float, 3>(simd.w);
   }
 
-  inline Matrix<float, 3> RotationMatrix() const {
+  inline Matrix<float, 3> RotationMatrix() const WARN_UNUSED_RESULT {
     return ToRotationMatrix(*this);
   }
 
-  inline Vector<float, 3> ScaleVector3D() const {
+  inline Vector<float, 3> ScaleVector3D() const WARN_UNUSED_RESULT {
     return ToScaleVector3DHelper(*this);
   }
 
@@ -300,16 +300,16 @@ class Matrix<float, 4> {
   }
 
   template <typename CompatibleT>
-  static inline Matrix<float, 4> FromType(const CompatibleT& compatible) {
+  static inline WARN_UNUSED_RESULT Matrix<float, 4> FromType(const CompatibleT& compatible) {
     return FromTypeHelper<float, 4, 4, CompatibleT>(compatible);
   }
 
   template <typename CompatibleT>
-  static inline CompatibleT ToType(const Matrix<float, 4>& m) {
+  static inline WARN_UNUSED_RESULT CompatibleT ToType(const Matrix<float, 4>& m) {
     return ToTypeHelper<float, 4, 4, CompatibleT>(m);
   }
 
-  static inline Matrix<float, 4> OuterProduct(const Vector<float, 4>& v1,
+  static inline WARN_UNUSED_RESULT Matrix<float, 4> OuterProduct(const Vector<float, 4>& v1,
                                               const Vector<float, 4>& v2) {
     Matrix<float, 4> m;
     m.simd =
@@ -320,41 +320,41 @@ class Matrix<float, 4> {
     return m;
   }
 
-  static inline Matrix<float, 4> HadamardProduct(const Matrix<float, 4>& m1,
-                                                 const Matrix<float, 4>& m2) {
+  static inline WARN_UNUSED_RESULT Matrix<float, 4> HadamardProduct(const Matrix<float, 4>& m1,
+                                                 const Matrix<float, 4>& m2) WARN_UNUSED_RESULT {
     Matrix<float, 4> return_m;
     simd4x4f_mul(&m1.simd, &m2.simd,
                  &return_m.simd);
     return return_m;
   }
 
-  static inline Matrix<float, 4> Identity() {
+  static inline WARN_UNUSED_RESULT Matrix<float, 4> Identity() WARN_UNUSED_RESULT {
     Matrix<float, 4> return_m;
     simd4x4f_identity(&return_m.simd);
     return return_m;
   }
 
-  static inline Matrix<float, 4> FromTranslationVector(
-      const Vector<float, 3>& v) {
+  static inline WARN_UNUSED_RESULT Matrix<float, 4> FromTranslationVector(
+      const Vector<float, 3>& v) WARN_UNUSED_RESULT {
     return Matrix<float, 4>(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, v[0], v[1],
                             v[2], 1);
   }
 
-  static inline Vector<float, 4> ToScaleVector(const Matrix<float, 4, 4>& m) {
+  static inline WARN_UNUSED_RESULT Vector<float, 4> ToScaleVector(const Matrix<float, 4, 4>& m) WARN_UNUSED_RESULT {
     return ToScaleVectorHelper(m);
   }
 
-  static inline Matrix<float, 4> FromScaleVector(const Vector<float, 3>& v) {
+  static inline WARN_UNUSED_RESULT Matrix<float, 4> FromScaleVector(const Vector<float, 3>& v) WARN_UNUSED_RESULT {
     return Matrix<float, 4>(v[0], 0, 0, 0, 0, v[1], 0, 0, 0, 0, v[2], 0, 0, 0,
                             0, 1);
   }
 
-  static inline Matrix<float, 3> ToRotationMatrix(const Matrix<float, 4>& m) {
+  static inline WARN_UNUSED_RESULT Matrix<float, 3> ToRotationMatrix(const Matrix<float, 4>& m) WARN_UNUSED_RESULT {
     return Matrix<float, 3>(m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9],
                         m[10]);
   }
 
-  static inline Matrix<float, 4> FromRotationMatrix(const Matrix<float, 3>& m) {
+  static inline WARN_UNUSED_RESULT Matrix<float, 4> FromRotationMatrix(const Matrix<float, 3>& m) WARN_UNUSED_RESULT {
     return Matrix<float, 4>(m[0], m[1], m[2], 0, m[3], m[4], m[5], 0, m[6],
                             m[7], m[8], 0, 0, 0, 0, 1);
   }
@@ -363,8 +363,8 @@ class Matrix<float, 4> {
   ///
   /// @param affine An AffineTransform reference to be used to construct
   /// a Matrix<float, 4> by adding in the 'w' row of [0, 0, 0, 1].
-  static inline Matrix<float, 4> FromAffineTransform(
-      const AffineTransform& affine) {
+  static inline WARN_UNUSED_RESULT Matrix<float, 4> FromAffineTransform(
+      const AffineTransform& affine) WARN_UNUSED_RESULT {
     Matrix<float, 4> m;
     m.simd.x = simd4f_create(affine[0], affine[1], affine[2], 0.0f);
     m.simd.y = simd4f_create(affine[3], affine[4], affine[5], 0.0f);
@@ -380,33 +380,33 @@ class Matrix<float, 4> {
   ///
   /// @return Returns an AffineTransform that contains the essential
   /// transformation data from the Matrix<float, 4>.
-  static inline AffineTransform ToAffineTransform(const Matrix<float, 4>& m) {
+  static inline WARN_UNUSED_RESULT AffineTransform ToAffineTransform(const Matrix<float, 4>& m) WARN_UNUSED_RESULT {
     return AffineTransform(m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9],
                            m[10], m[12], m[13], m[14]);
   }
 
   /// Create a 4x4 perpective matrix.
   /// @handedness: 1.0f for RH, -1.0f for LH
-  static inline Matrix<float, 4, 4> Perspective(float fovy, float aspect,
+  static inline WARN_UNUSED_RESULT Matrix<float, 4, 4> Perspective(float fovy, float aspect,
                                                 float znear, float zfar,
-                                                float handedness = 1.0f) {
+                                                float handedness = 1.0f) WARN_UNUSED_RESULT {
     return PerspectiveHelper(fovy, aspect, znear, zfar, handedness);
   }
 
   /// Create a 4x4 perpective matrix.
   /// @handedness: 1.0f for RH, -1.0f for LH
-  static inline Matrix<float, 4, 4> Perspective(float left, float right,
+  static inline WARN_UNUSED_RESULT Matrix<float, 4, 4> Perspective(float left, float right,
 												float bottom, float top,
                                                 float znear, float zfar,
-                                                float handedness = 1.0f) {
+                                                float handedness = 1.0f) WARN_UNUSED_RESULT {
     return PerspectiveHelper(left, right, bottom, top, znear, zfar, handedness);
   }
 
   /// Create a 4x4 orthographic matrix.
   /// @param handedness 1.0f for RH, -1.0f for LH
-  static inline Matrix<float, 4, 4> Ortho(float left, float right, float bottom,
+  static inline WARN_UNUSED_RESULT Matrix<float, 4, 4> Ortho(float left, float right, float bottom,
                                           float top, float znear, float zfar,
-                                          float handedness = 1.0f) {
+                                          float handedness = 1.0f) WARN_UNUSED_RESULT {
     return OrthoHelper(left, right, bottom, top, znear, zfar, handedness);
   }
 
@@ -417,10 +417,10 @@ class Matrix<float, 4> {
   /// @handedness: 1.0f for RH, -1.0f for LH
   /// TODO: Change default handedness to 1.0f, to match Perspective().
   /// y-axis is up.
-  static inline Matrix<float, 4, 4> LookAt(const Vector<float, 3>& at,
+  static inline WARN_UNUSED_RESULT Matrix<float, 4, 4> LookAt(const Vector<float, 3>& at,
                                            const Vector<float, 3>& eye,
                                            const Vector<float, 3>& up,
-                                           float handedness = -1.0f) {
+                                           float handedness = -1.0f) WARN_UNUSED_RESULT {
     return LookAtHelper(at, eye, up, handedness);
   }
 
@@ -435,11 +435,11 @@ class Matrix<float, 4> {
   /// @param window_width Width of the window.
   /// @param window_height Height of the window.
   /// @return the mapped 3D position in object space.
-  static inline Vector<float, 3> UnProject(
+  static inline WARN_UNUSED_RESULT Vector<float, 3> UnProject(
       const Vector<float, 3>& window_coord,
       const Matrix<float, 4, 4>& model_view,
       const Matrix<float, 4, 4>& projection, const float window_width,
-      const float window_height) {
+      const float window_height) WARN_UNUSED_RESULT {
     Vector<float, 3> result;
     UnProjectHelper(window_coord, model_view, projection, window_width,
                     window_height, result);

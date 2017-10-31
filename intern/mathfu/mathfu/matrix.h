@@ -375,7 +375,7 @@ class Matrix {
   /// @param row Index of the row to access.
   /// @param column Index of the column to access.
   /// @return Const reference to the element.
-  inline const T& operator()(const int row, const int column) const {
+  inline const T& operator()(const int row, const int column) const WARN_UNUSED_RESULT {
     return data_[column][row];
   }
 
@@ -384,7 +384,7 @@ class Matrix {
   /// @param row Index of the row to access.
   /// @param column Index of the column to access.
   /// @return Reference to the data that can be modified by the caller.
-  inline T& operator()(const int row, const int column) {
+  inline T& operator()(const int row, const int column) WARN_UNUSED_RESULT {
     return data_[column][row];
   }
 
@@ -393,21 +393,21 @@ class Matrix {
   /// @param i Index of the element to access in flattened memory.  Where
   /// the column accessed is i / rows and the row is i % rows.
   /// @return Reference to the data that can be modified by the caller.
-  inline const T& operator()(const int i) const { return operator[](i); }
+  inline const T& operator()(const int i) const WARN_UNUSED_RESULT { return operator[](i); }
 
   /// @brief Access an element of the Matrix.
   ///
   /// @param i Index of the element to access in flattened memory.  Where
   /// the column accessed is i / rows and the row is i % rows.
   /// @return Reference to the data that can be modified by the caller.
-  inline T& operator()(const int i) { return operator[](i); }
+  inline T& operator()(const int i) WARN_UNUSED_RESULT { return operator[](i); }
 
   /// @brief Access an element of the Matrix.
   ///
   /// @param i Index of the element to access in flattened memory.  Where
   /// the column accessed is i / rows and the row is i % rows.
   /// @return Const reference to the data.
-  inline const T& operator[](const int i) const {
+  inline const T& operator[](const int i) const WARN_UNUSED_RESULT {
     return const_cast<Matrix<T, rows, columns>*>(this)->operator[](i);
   }
 
@@ -416,7 +416,7 @@ class Matrix {
   /// @param i Index of the element to access in flattened memory.  Where
   /// the column accessed is i / rows and the row is i % rows.
   /// @return Reference to the data that can be modified by the caller.
-  inline T& operator[](const int i) {
+  inline T& operator[](const int i) WARN_UNUSED_RESULT {
 #if defined(MATHFU_COMPILE_WITH_PADDING)
     // In this case Vector<T, 3> is padded, so the element offset must be
     // accessed using the array operator.
@@ -477,18 +477,18 @@ class Matrix {
   ///
   /// @param i Index of the column to access.
   /// @return Reference to the data that can be modified by the caller.
-  inline Vector<T, rows>& GetColumn(const int i) { return data_[i]; }
+  inline Vector<T, rows>& GetColumn(const int i) WARN_UNUSED_RESULT { return data_[i]; }
 
   /// @brief Access a column vector of the Matrix.
   ///
   /// @param i Index of the column to access.
   /// @return Const reference to the data.
-  inline const Vector<T, rows>& GetColumn(const int i) const {
+  inline const Vector<T, rows>& GetColumn(const int i) const WARN_UNUSED_RESULT {
     return data_[i];
   }
   /// @endcond
 
-  inline Vector<T, columns> GetRow(const int i) const {
+  inline Vector<T, columns> GetRow(const int i) const WARN_UNUSED_RESULT {
     Vector<T, columns> v;
     for (int j = 0; j < columns; ++j) {
       v[j] = data_[j][i];
@@ -625,7 +625,7 @@ class Matrix {
     return *this;
   }
 
-  inline Vector<T, rows> GetEuler() const {
+  inline Vector<T, rows> GetEuler() const WARN_UNUSED_RESULT {
     MATHFU_STATIC_ASSERT(rows == 3 && columns == 3);
     return EulerHelper(*this);
   }
@@ -635,7 +635,7 @@ class Matrix {
   /// This calculates the inverse Matrix such that
   /// <code>(m * m).Inverse()</code> is the identity.
   /// @return Matrix containing the result.
-  inline Matrix<T, rows, columns> Inverse() const {
+  inline Matrix<T, rows, columns> Inverse() const WARN_UNUSED_RESULT {
     Matrix<T, rows, columns> inverse;
     InverseHelper<false>(*this, &inverse);
     return inverse;
@@ -664,7 +664,7 @@ class Matrix {
   /// @brief Calculate the transpose of this Matrix.
   ///
   /// @return The transpose of the specified Matrix.
-  inline Matrix<T, columns, rows> Transpose() const {
+  inline Matrix<T, columns, rows> Transpose() const WARN_UNUSED_RESULT {
     Matrix<T, columns, rows> transpose;
     MATHFU_UNROLLED_LOOP(
         i, columns, MATHFU_UNROLLED_LOOP(
@@ -672,7 +672,7 @@ class Matrix {
     return transpose;
   }
 
-  inline Matrix<T, rows, columns> Scale(const Vector<T, columns>& v) {
+  inline Matrix<T, rows, columns> Scale(const Vector<T, columns>& v) const WARN_UNUSED_RESULT {
     return ScaleHelper(*this, v);
   }
 
@@ -681,7 +681,7 @@ class Matrix {
   ///
   /// @note 2-dimensional affine transforms are represented by 3x3 matrices.
   /// @return Vector with the first two components of column 2 of this Matrix.
-  inline Vector<T, 2> TranslationVector2D() const {
+  inline Vector<T, 2> TranslationVector2D() const WARN_UNUSED_RESULT {
     MATHFU_STATIC_ASSERT(rows == 3 && columns == 3);
     return Vector<T, 2>(data_[2][0], data_[2][1]);
   }
@@ -691,17 +691,17 @@ class Matrix {
   ///
   /// @note 3-dimensional affine transforms are represented by 4x4 matrices.
   /// @return Vector with the first three components of column 3.
-  inline Vector<T, 3> TranslationVector3D() const {
+  inline Vector<T, 3> TranslationVector3D() const WARN_UNUSED_RESULT {
     MATHFU_STATIC_ASSERT(rows >= 3 && columns == 4);
     return Vector<T, 3>(data_[3][0], data_[3][1], data_[3][2]);
   }
 
-  inline Matrix<T, 3> RotationMatrix() const {
+  inline Matrix<T, 3> RotationMatrix() const WARN_UNUSED_RESULT {
     MATHFU_STATIC_ASSERT(rows >= 3 && columns == 4);
     return ToRotationMatrix(*this);
   }
 
-  inline Vector<T, 3> ScaleVector3D() const {
+  inline Vector<T, 3> ScaleVector3D() const WARN_UNUSED_RESULT {
     return ToScaleVector3DHelper(*this);
   }
 
@@ -722,7 +722,7 @@ class Matrix {
   ///                   array of columns x rows Ts.
   /// @returns `compatible` loaded as a mathfu::Matrix.
   template <typename CompatibleT>
-  static inline Matrix<T, rows, columns> FromType(const CompatibleT& compatible) {
+  static inline WARN_UNUSED_RESULT Matrix<T, rows, columns> FromType(const CompatibleT& compatible) {
     return FromTypeHelper<T, rows, columns, CompatibleT>(compatible);
   }
 
@@ -739,14 +739,14 @@ class Matrix {
   /// @param m reference to mathfu::Matrix to convert.
   /// @returns CompatibleT loaded from m.
   template <typename CompatibleT>
-  static inline CompatibleT ToType(const Matrix<T, rows, columns>& m) {
+  static inline WARN_UNUSED_RESULT CompatibleT ToType(const Matrix<T, rows, columns>& m) {
     return ToTypeHelper<T, rows, columns, CompatibleT>(m);
   }
 
   /// @brief Calculate the outer product of two Vectors.
   ///
   /// @return Matrix containing the result.
-  static inline Matrix<T, rows, columns> OuterProduct(
+  static inline WARN_UNUSED_RESULT Matrix<T, rows, columns> OuterProduct(
       const Vector<T, rows>& v1, const Vector<T, columns>& v2) {
     return OuterProductHelper(v1, v2);
   }
@@ -756,15 +756,15 @@ class Matrix {
   /// @param m1 First Matrix.
   /// @param m2 Second Matrix.
   /// @return Matrix containing the result.
-  static inline Matrix<T, rows, columns> HadamardProduct(
-      const Matrix<T, rows, columns>& m1, const Matrix<T, rows, columns>& m2) {
+  static inline WARN_UNUSED_RESULT Matrix<T, rows, columns> HadamardProduct(
+      const Matrix<T, rows, columns>& m1, const Matrix<T, rows, columns>& m2) WARN_UNUSED_RESULT {
     MATHFU_MAT_OPERATOR(m1[i] * m2[i]);
   }
 
   /// @brief Calculate the identity Matrix.
   ///
   /// @return Matrix containing the result.
-  static inline Matrix<T, rows, columns> Identity() {
+  static inline WARN_UNUSED_RESULT Matrix<T, rows, columns> Identity() WARN_UNUSED_RESULT {
     return IdentityHelper<T, rows, columns>();
   }
 
@@ -774,7 +774,7 @@ class Matrix {
   ///
   /// @param v Vector of size 2.
   /// @return Matrix containing the result.
-  static inline Matrix<T, 3> FromTranslationVector(const Vector<T, 2>& v) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 3> FromTranslationVector(const Vector<T, 2>& v) WARN_UNUSED_RESULT {
     return Matrix<T, 3>(1, 0, 0, 0, 1, 0, v[0], v[1], 1);
   }
 
@@ -784,7 +784,7 @@ class Matrix {
   ///
   /// @param v The vector of size 3.
   /// @return Matrix containing the result.
-  static inline Matrix<T, 4> FromTranslationVector(const Vector<T, 3>& v) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 4> FromTranslationVector(const Vector<T, 3>& v) WARN_UNUSED_RESULT {
     return Matrix<T, 4>(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, v[0], v[1], v[2],
                         1);
   }
@@ -796,7 +796,7 @@ class Matrix {
   ///
   /// @param v Vector containing components for scaling.
   /// @return Matrix with v along the diagonal, and 1 in the bottom right.
-  static inline Matrix<T, rows> FromScaleVector(const Vector<T, rows - 1>& v) {
+  static inline WARN_UNUSED_RESULT Matrix<T, rows> FromScaleVector(const Vector<T, rows - 1>& v) WARN_UNUSED_RESULT {
     // TODO OPT: Use a helper function in a similar way to Identity to
     // construct the matrix for the specialized cases 2, 3, 4, and only run
     // this method in the general case. This will also allow you to use the
@@ -806,7 +806,7 @@ class Matrix {
     return return_matrix;
   }
 
-  static inline Vector<T, columns> ToScaleVector(const Matrix<T, rows, columns>& m) {
+  static inline WARN_UNUSED_RESULT Vector<T, columns> ToScaleVector(const Matrix<T, rows, columns>& m) WARN_UNUSED_RESULT {
     return ToScaleVectorHelper(m);
   }
 
@@ -816,7 +816,7 @@ class Matrix {
   ///
   /// @param m 3x3 rotation Matrix.
   /// @return Matrix containing the result.
-  static inline Matrix<T, 4> FromRotationMatrix(const Matrix<T, 3>& m) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 4> FromRotationMatrix(const Matrix<T, 3>& m) WARN_UNUSED_RESULT {
     return Matrix<T, 4>(m[0], m[1], m[2], 0, m[3], m[4], m[5], 0, m[6], m[7],
                         m[8], 0, 0, 0, 0, 1);
   }
@@ -828,7 +828,7 @@ class Matrix {
   ///
   /// @param m 4x4 Matrix.
   /// @return rotation Matrix containing the result.
-  static inline Matrix<T, 3> ToRotationMatrix(const Matrix<T, 4>& m) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 3> ToRotationMatrix(const Matrix<T, 4>& m) WARN_UNUSED_RESULT {
     return Matrix<T, 3>(m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9],
                         m[10]);
   }
@@ -840,7 +840,7 @@ class Matrix {
   ///
   /// @param m 4x3 Matrix.
   /// @return rotation Matrix containing the result.
-  static inline Matrix<T, 3> ToRotationMatrix(const Matrix<T, 3, 4>& m) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 3> ToRotationMatrix(const Matrix<T, 3, 4>& m) WARN_UNUSED_RESULT {
     return Matrix<T, 3>(m.GetColumn(0), m.GetColumn(1), m.GetColumn(2));
   } 
 
@@ -848,8 +848,8 @@ class Matrix {
   ///
   /// @param affine An AffineTransform reference to be used to construct
   /// a Matrix<float, 4> by adding in the 'w' row of [0, 0, 0, 1].
-  static inline Matrix<T, 4> FromAffineTransform(
-      const Matrix<T, 3, 4>& affine) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 4> FromAffineTransform(
+      const Matrix<T, 3, 4>& affine) WARN_UNUSED_RESULT {
     return Matrix<T, 4>(affine[0], affine[1], affine[2], static_cast<T>(0),
                         affine[3], affine[4], affine[5], static_cast<T>(0),
                         affine[6], affine[7], affine[8], static_cast<T>(0),
@@ -863,7 +863,7 @@ class Matrix {
   ///
   /// @return Returns an AffineTransform that contains the essential
   /// transformation data from the Matrix<float, 4>.
-  static inline Matrix<T, 3, 4> ToAffineTransform(const Matrix<T, 4>& m) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 3, 4> ToAffineTransform(const Matrix<T, 4>& m) WARN_UNUSED_RESULT {
     return Matrix<T, 3, 4>(m[0], m[1], m[2], m[4], m[5], m[6], m[8], m[9],
                            m[10], m[12], m[13], m[14]);
   }
@@ -873,7 +873,7 @@ class Matrix {
   ///
   /// @param v 2D normalized directional Vector.
   /// @return Matrix containing the result.
-  static inline Matrix<T, 3> RotationX(const Vector<T, 2>& v) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 3> RotationX(const Vector<T, 2>& v) WARN_UNUSED_RESULT {
     return Matrix<T, 3>(1, 0, 0, 0, v.x, v.y, 0, -v.y, v.x);
   }
 
@@ -882,7 +882,7 @@ class Matrix {
   ///
   /// @param v 2D normalized directional Vector.
   /// @return Matrix containing the result.
-  static inline Matrix<T, 3> RotationY(const Vector<T, 2>& v) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 3> RotationY(const Vector<T, 2>& v) WARN_UNUSED_RESULT {
     return Matrix<T, 3>(v.x, 0, -v.y, 0, 1, 0, v.y, 0, v.x);
   }
 
@@ -891,7 +891,7 @@ class Matrix {
   ///
   /// @param v 2D normalized directional Vector.
   /// @return Matrix containing the result.
-  static inline Matrix<T, 3> RotationZ(const Vector<T, 2>& v) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 3> RotationZ(const Vector<T, 2>& v) WARN_UNUSED_RESULT {
     return Matrix<T, 3>(v.x, v.y, 0, -v.y, v.x, 0, 0, 0, 1);
   }
 
@@ -900,7 +900,7 @@ class Matrix {
   ///
   /// @param angle Angle (in radians).
   /// @return Matrix containing the result.
-  static inline Matrix<T, 3> RotationX(T angle) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 3> RotationX(T angle) WARN_UNUSED_RESULT {
     return RotationX(Vector<T, 2>(cosf(angle), sinf(angle)));
   }
 
@@ -909,7 +909,7 @@ class Matrix {
   ///
   /// @param angle Angle (in radians).
   /// @return Matrix containing the result.
-  static inline Matrix<T, 3> RotationY(T angle) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 3> RotationY(T angle) WARN_UNUSED_RESULT {
     return RotationY(Vector<T, 2>(cosf(angle), sinf(angle)));
   }
 
@@ -918,7 +918,7 @@ class Matrix {
   ///
   /// @param angle Angle (in radians).
   /// @return Matrix containing the result.
-  static inline Matrix<T, 3> RotationZ(T angle) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 3> RotationZ(T angle) WARN_UNUSED_RESULT {
     return RotationZ(Vector<T, 2>(cosf(angle), sinf(angle)));
   }
 
@@ -930,8 +930,8 @@ class Matrix {
   /// @param zfar Far plane location.
   /// @param handedness 1.0f for RH, -1.0f for LH
   /// @return 4x4 perspective Matrix.
-  static inline Matrix<T, 4, 4> Perspective(T fovy, T aspect, T znear, T zfar,
-                                            T handedness = 1) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 4, 4> Perspective(T fovy, T aspect, T znear, T zfar,
+                                            T handedness = 1) WARN_UNUSED_RESULT {
     return PerspectiveHelper(fovy, aspect, znear, zfar, handedness);
   }
 
@@ -945,8 +945,8 @@ class Matrix {
   /// @param zfar Far plane location.
   /// @param handedness 1.0f for RH, -1.0f for LH
   /// @return 4x4 perspective Matrix.
-  static inline Matrix<T, 4, 4> Perspective(T left, T right, T bottom, T top, T znear, T zfar,
-                                            T handedness = 1) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 4, 4> Perspective(T left, T right, T bottom, T top, T znear, T zfar,
+                                            T handedness = 1) WARN_UNUSED_RESULT {
     return PerspectiveHelper(left, right, bottom, top, znear, zfar, handedness);
   }
 
@@ -960,8 +960,8 @@ class Matrix {
   /// @param zfar Far plane location.
   /// @param handedness 1.0f for RH, -1.0f for LH
   /// @return 4x4 orthographic Matrix.
-  static inline Matrix<T, 4, 4> Ortho(T left, T right, T bottom, T top, T znear,
-                                      T zfar, T handedness = 1) {
+  static inline WARN_UNUSED_RESULT Matrix<T, 4, 4> Ortho(T left, T right, T bottom, T top, T znear,
+                                      T zfar, T handedness = 1) WARN_UNUSED_RESULT {
     return OrthoHelper(left, right, bottom, top, znear, zfar, handedness);
   }
 
@@ -974,10 +974,10 @@ class Matrix {
   /// @param handedness 1.0f for RH, -1.0f for LH.
   /// @return 3-dimensional camera Matrix.
   /// TODO: Change default handedness to +1 so that it matches Perspective().
-  static inline Matrix<T, 4, 4> LookAt(const Vector<T, 3>& at,
+  static inline WARN_UNUSED_RESULT Matrix<T, 4, 4> LookAt(const Vector<T, 3>& at,
                                        const Vector<T, 3>& eye,
                                        const Vector<T, 3>& up,
-                                       T handedness = -1) {
+                                       T handedness = -1) WARN_UNUSED_RESULT {
     return LookAtHelper(at, eye, up, handedness);
   }
 
@@ -992,11 +992,11 @@ class Matrix {
   /// @param window_width Width of the window.
   /// @param window_height Height of the window.
   /// @return the mapped 3D position in object space.
-  static inline Vector<T, 3> UnProject(const Vector<T, 3>& window_coord,
+  static inline WARN_UNUSED_RESULT Vector<T, 3> UnProject(const Vector<T, 3>& window_coord,
                                        const Matrix<T, 4, 4>& model_view,
                                        const Matrix<T, 4, 4>& projection,
                                        const float window_width,
-                                       const float window_height) {
+                                       const float window_height) WARN_UNUSED_RESULT {
     Vector<T, 3> result;
     UnProjectHelper(window_coord, model_view, projection, window_width,
                     window_height, result);

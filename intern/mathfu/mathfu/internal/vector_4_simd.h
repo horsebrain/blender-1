@@ -79,25 +79,25 @@ class Vector<float, 4> {
     simd = simd4f_uload4(vector.data);
   }
 
-  inline float& operator()(const int i) { return data_[i]; }
+  inline float& operator()(const int i) WARN_UNUSED_RESULT { return data_[i]; }
 
-  inline const float& operator()(const int i) const { return data_[i]; }
+  inline const float& operator()(const int i) const WARN_UNUSED_RESULT { return data_[i]; }
 
-  inline float& operator[](const int i) { return data_[i]; }
+  inline float& operator[](const int i) WARN_UNUSED_RESULT { return data_[i]; }
 
-  inline const float& operator[](const int i) const { return data_[i]; }
+  inline const float& operator[](const int i) const WARN_UNUSED_RESULT { return data_[i]; }
 
   /// GLSL style multi-component accessors.
-  inline Vector<float, 3> xyz() { return Vector<float, 3>(x, y, z); }
-  inline const Vector<float, 3> xyz() const {
+  inline Vector<float, 3> xyz() WARN_UNUSED_RESULT { return Vector<float, 3>(x, y, z); }
+  inline const Vector<float, 3> xyz() const WARN_UNUSED_RESULT {
     return Vector<float, 3>(x, y, z);
   }
 
-  inline Vector<float, 2> xy() { return Vector<float, 2>(x, y); }
-  inline const Vector<float, 2> xy() const { return Vector<float, 2>(x, y); }
+  inline Vector<float, 2> xy() WARN_UNUSED_RESULT { return Vector<float, 2>(x, y); }
+  inline const Vector<float, 2> xy() const WARN_UNUSED_RESULT { return Vector<float, 2>(x, y); }
 
-  inline Vector<float, 2> zw() { return Vector<float, 2>(z, w); }
-  inline const Vector<float, 2> zw() const { return Vector<float, 2>(z, w); }
+  inline Vector<float, 2> zw() WARN_UNUSED_RESULT { return Vector<float, 2>(z, w); }
+  inline const Vector<float, 2> zw() const WARN_UNUSED_RESULT { return Vector<float, 2>(z, w); }
 
   inline void Pack(VectorPacked<float, 4>* const vector) const {
     simd4f_ustore4(simd, vector->data);
@@ -107,7 +107,7 @@ class Vector<float, 4> {
     simd4f_ustore4(simd, a);
   }
 
-  inline const float (&Data() const)[4] {
+  inline const float (&Data() const)[4] WARN_UNUSED_RESULT {
     return data_;
   }
 
@@ -198,11 +198,11 @@ class Vector<float, 4> {
     return !operator==(v);
   }
 
-  inline float LengthSquared() const {
+  inline float LengthSquared() const WARN_UNUSED_RESULT {
     return simd4f_get_x(simd4f_dot4(simd, simd));
   }
 
-  inline float Length() const { return simd4f_get_x(simd4f_length4(simd)); }
+  inline float Length() const WARN_UNUSED_RESULT { return simd4f_get_x(simd4f_length4(simd)); }
 
   inline float Normalize() {
     const float length = Length();
@@ -210,42 +210,42 @@ class Vector<float, 4> {
     return length;
   }
 
-  inline Vector<float, 4> Normalized() const {
+  inline Vector<float, 4> Normalized() const WARN_UNUSED_RESULT {
     return Vector<float, 4>(simd4f_normalize4(simd));
   }
 
-  inline Vector<float, 4> SafeNormalized(const Vector<float, 4>& v) const {
+  inline Vector<float, 4> SafeNormalized(const Vector<float, 4>& v) const WARN_UNUSED_RESULT {
     if (FuzzyZeroHelper(Length())) {
       return v;
     }
     return Normalized();
   }
 
-  static inline bool FuzzyZero(const Vector<float, 4>& v) {
+  static inline WARN_UNUSED_RESULT bool FuzzyZero(const Vector<float, 4>& v) {
     return FuzzyZeroHelper(v);
   }
 
   template <typename CompatibleT>
-  static inline Vector<float, 4> FromType(const CompatibleT& compatible) {
+  static inline WARN_UNUSED_RESULT Vector<float, 4> FromType(const CompatibleT& compatible) {
     return FromTypeHelper<float, 4, CompatibleT>(compatible);
   }
 
   template <typename CompatibleT>
-  static inline CompatibleT ToType(const Vector<float, 4>& v) {
+  static inline WARN_UNUSED_RESULT CompatibleT ToType(const Vector<float, 4>& v) {
     return ToTypeHelper<float, 4, CompatibleT>(v);
   }
 
-  static inline float DotProduct(const Vector<float, 4>& v1,
+  static inline WARN_UNUSED_RESULT float DotProduct(const Vector<float, 4>& v1,
                                  const Vector<float, 4>& v2) {
     return simd4f_get_x(simd4f_dot4(v1.simd, v2.simd));
   }
 
-  static inline Vector<float, 4> HadamardProduct(const Vector<float, 4>& v1,
+  static inline WARN_UNUSED_RESULT Vector<float, 4> HadamardProduct(const Vector<float, 4>& v1,
                                                  const Vector<float, 4>& v2) {
     return Vector<float, 4>(simd4f_mul(v1.simd, v2.simd));
   }
 
-  static inline Vector<float, 4> Lerp(const Vector<float, 4>& v1,
+  static inline WARN_UNUSED_RESULT Vector<float, 4> Lerp(const Vector<float, 4>& v1,
                                       const Vector<float, 4>& v2,
                                       float percent) {
     const Vector<float, 4> percentv(percent);
@@ -258,7 +258,7 @@ class Vector<float, 4> {
 
   /// Generates a random vector, where the range for each component is
   /// bounded by min and max.
-  static inline Vector<float, 4> RandomInRange(const Vector<float, 4>& min,
+  static inline WARN_UNUSED_RESULT Vector<float, 4> RandomInRange(const Vector<float, 4>& min,
                                                const Vector<float, 4>& max) {
     return Vector<float, 4>(mathfu::RandomInRange<float>(min[0], max[0]),
                             mathfu::RandomInRange<float>(min[1], max[1]),
@@ -266,12 +266,12 @@ class Vector<float, 4> {
                             mathfu::RandomInRange<float>(min[3], max[3]));
   }
 
-  static inline Vector<float, 4> Max(const Vector<float, 4>& v1,
+  static inline WARN_UNUSED_RESULT Vector<float, 4> Max(const Vector<float, 4>& v1,
                                      const Vector<float, 4>& v2) {
     return Vector<float, 4>(simd4f_max(v1.simd, v2.simd));
   }
 
-  static inline Vector<float, 4> Min(const Vector<float, 4>& v1,
+  static inline WARN_UNUSED_RESULT Vector<float, 4> Min(const Vector<float, 4>& v1,
                                      const Vector<float, 4>& v2) {
     return Vector<float, 4>(simd4f_min(v1.simd, v2.simd));
   }

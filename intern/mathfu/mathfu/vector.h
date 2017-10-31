@@ -290,33 +290,33 @@ class Vector {
   /// @param i Index of the element to access.
   /// @return A reference to the accessed data that can be modified by the
   /// caller.
-  inline T& operator()(const int i) { return data_[i]; }
+  inline T& operator()(const int i) WARN_UNUSED_RESULT { return data_[i]; }
 
   /// @brief Access an element of the vector.
   ///
   /// @param i Index of the element to access.
   /// @return A reference to the accessed data.
-  inline const T& operator()(const int i) const { return data_[i]; }
+  inline const T& operator()(const int i) const WARN_UNUSED_RESULT { return data_[i]; }
 
   /// @brief Access an element of the vector.
   ///
   /// @param i Index of the element to access.
   /// @return A reference to the accessed data that can be modified by the
   /// caller.
-  inline T& operator[](const int i) { return data_[i]; }
+  inline T& operator[](const int i) WARN_UNUSED_RESULT { return data_[i]; }
 
   /// @brief Access an element of the vector.
   ///
   /// @param i Index of the element to access.
   /// @return A const reference to the accessed.
-  inline const T& operator[](const int i) const { return data_[i]; }
+  inline const T& operator[](const int i) const WARN_UNUSED_RESULT { return data_[i]; }
 
   /// @brief GLSL style 3 element accessor.
   ///
   /// This only works with vectors that contain more than 3 elements.
   /// @returns A 3-dimensional Vector containing the first 3 elements of
   // this Vector.
-  inline Vector<T, 3> xyz() {
+  inline Vector<T, 3> xyz() WARN_UNUSED_RESULT {
     MATHFU_STATIC_ASSERT(d > 3);
     return Vector<T, 3>(data_[0], data_[1], data_[2]);
   }
@@ -326,7 +326,7 @@ class Vector {
   /// This only works with vectors that contain more than 3 elements.
   /// @returns A 3-dimensional Vector containing the first 3 elements of
   // this Vector.
-  inline const Vector<T, 3> xyz() const {
+  inline const Vector<T, 3> xyz() const WARN_UNUSED_RESULT {
     MATHFU_STATIC_ASSERT(d > 3);
     return Vector<T, 3>(data_[0], data_[1], data_[2]);
   }
@@ -335,7 +335,7 @@ class Vector {
   ///
   /// This only works with vectors that contain more than 2 elements.
   /// @returns A 2-dimensional Vector with the first 2 elements of this Vector.
-  inline Vector<T, 2> xy() {
+  inline Vector<T, 2> xy() WARN_UNUSED_RESULT {
     MATHFU_STATIC_ASSERT(d > 2);
     return Vector<T, 2>(data_[0], data_[1]);
   }
@@ -344,7 +344,7 @@ class Vector {
   ///
   /// This only works with vectors that contain more than 2 elements.
   /// @returns A 2-dimensional Vector with the first 2 elements of this Vector.
-  inline const Vector<T, 2> xy() const {
+  inline const Vector<T, 2> xy() const WARN_UNUSED_RESULT {
     MATHFU_STATIC_ASSERT(d > 2);
     return Vector<T, 2>(data_[0], data_[1]);
   }
@@ -353,7 +353,7 @@ class Vector {
   ///
   /// This only works with vectors that contain 4 elements.
   /// @returns A 2-dimensional Vector with the last 2 elements of this Vector.
-  inline Vector<T, 2> zw() {
+  inline Vector<T, 2> zw() WARN_UNUSED_RESULT {
     MATHFU_STATIC_ASSERT(d == 4);
     return Vector<T, 2>(data_[2], data_[3]);
   }
@@ -362,7 +362,7 @@ class Vector {
   ///
   /// This only works with vectors that contain 4 elements.
   /// @returns A 2-dimensional Vector with the last 2 elements of this Vector.
-  inline const Vector<T, 2> zw() const {
+  inline const Vector<T, 2> zw() const WARN_UNUSED_RESULT {
     MATHFU_STATIC_ASSERT(d == 4);
     return Vector<T, 2>(data_[2], data_[3]);
   }
@@ -370,33 +370,33 @@ class Vector {
   /// @brief Pack a Vector to a packed "d" element vector structure.
   ///
   /// @param vector Packed "d" element vector to write to.
-  inline void Pack(VectorPacked<T, d>* const vector) const {
+  inline void Pack(VectorPacked<T, d>* const vector) const WARN_UNUSED_RESULT {
     MATHFU_VECTOR_OPERATION(vector->data[i] = data_[i]);
   }
 
   /// @brief Pack a Vector to a array "d" element.
   ///
   /// @param a array "d" element to write to.
-  inline void Pack(T *a) const {
+  inline void Pack(T *a) const WARN_UNUSED_RESULT {
     MATHFU_VECTOR_OPERATION(a[i] = data_[i]);
   }
 
   /// @brief Return the array of this vector.
   ///
   /// @return The array of this vector.
-  inline const float (&Data() const)[d] {
+  inline const float (&Data() const)[d] WARN_UNUSED_RESULT {
     return data_;
   }
 
   /// @brief Calculate the squared length of this vector.
   ///
   /// @return The length of this vector squared.
-  inline T LengthSquared() const { return LengthSquaredHelper(*this); }
+  inline T LengthSquared() const WARN_UNUSED_RESULT { return LengthSquaredHelper(*this); }
 
   /// @brief Calculate the length of this vector.
   ///
   /// @return The length of this vector.
-  inline T Length() const { return LengthHelper(*this); }
+  inline T Length() const WARN_UNUSED_RESULT { return LengthHelper(*this); }
 
   /// @brief Normalize this vector in-place.
   ///
@@ -406,13 +406,13 @@ class Vector {
   /// @brief Calculate the normalized version of this vector.
   ///
   /// @return The normalized vector.
-  inline Vector<T, d> Normalized() const { return NormalizedHelper(*this); }
+  inline Vector<T, d> Normalized() const WARN_UNUSED_RESULT { return NormalizedHelper(*this); }
 
-  inline Vector<T, d> SafeNormalized(const Vector<T, d>& v) const {
+  inline Vector<T, d> SafeNormalized(const Vector<T, d>& v) const WARN_UNUSED_RESULT {
     return SafeNormalizedHelper(*this, v);
   }
 
-  static inline bool FuzzyZero(const Vector<T, d>& v) {
+  static inline WARN_UNUSED_RESULT bool FuzzyZero(const Vector<T, d>& v) {
     return FuzzyZeroHelper(v);
   }
 
@@ -424,7 +424,7 @@ class Vector {
   ///
   /// @return `compatible` cast to `Vector<T,d>` and dereferenced.
   template <typename CompatibleT>
-  static inline Vector<T, d> FromType(const CompatibleT& compatible) {
+  static inline WARN_UNUSED_RESULT Vector<T, d> FromType(const CompatibleT& compatible) {
     return FromTypeHelper<T, d, CompatibleT>(compatible);
   }
 
@@ -436,7 +436,7 @@ class Vector {
   ///
   /// @return `v` cast to `CompatibleT` and dereferenced.
   template <typename CompatibleT>
-  static inline CompatibleT ToType(const Vector<T, d>& v) {
+  static inline WARN_UNUSED_RESULT CompatibleT ToType(const Vector<T, d>& v) {
     return ToTypeHelper<T, d, CompatibleT>(v);
   }
 
@@ -445,7 +445,7 @@ class Vector {
   /// @param v1 First vector.
   /// @param v2 Second vector.
   /// @return The dot product of v1 and v2.
-  static inline T DotProduct(const Vector<T, d>& v1, const Vector<T, d>& v2) {
+  static inline WARN_UNUSED_RESULT T DotProduct(const Vector<T, d>& v1, const Vector<T, d>& v2) {
     return DotProductHelper(v1, v2);
   }
 
@@ -454,7 +454,7 @@ class Vector {
   /// @param v1 First vector.
   /// @param v2 Second vector.
   /// @return The hadamard product of v1 and v2.
-  static inline Vector<T, d> HadamardProduct(const Vector<T, d>& v1,
+  static inline WARN_UNUSED_RESULT Vector<T, d> HadamardProduct(const Vector<T, d>& v1,
                                              const Vector<T, d>& v2) {
     return HadamardProductHelper(v1, v2);
   }
@@ -465,7 +465,7 @@ class Vector {
   /// @param v1 First vector.
   /// @param v2 Second vector.
   /// @return The cross product of v1 and v2.
-  static inline Vector<T, 3> CrossProduct(const Vector<T, 3>& v1,
+  static inline WARN_UNUSED_RESULT Vector<T, 3> CrossProduct(const Vector<T, 3>& v1,
                                           const Vector<T, 3>& v2) {
     return CrossProductHelper(v1, v2);
   }
@@ -476,7 +476,7 @@ class Vector {
   /// @param v2 Second vector.
   /// @param percent Percentage from v1 to v2 in range 0.0...1.0.
   /// @return The hadamard product of v1 and v2.
-  static inline Vector<T, d> Lerp(const Vector<T, d>& v1,
+  static inline WARN_UNUSED_RESULT Vector<T, d> Lerp(const Vector<T, d>& v1,
                                   const Vector<T, d>& v2, const T percent) {
     return LerpHelper(v1, v2, percent);
   }
@@ -486,7 +486,7 @@ class Vector {
   /// The range of each component is bounded by min and max.
   /// @param min Minimum value of the vector.
   /// @param max Maximum value of the vector.
-  static inline Vector<T, d> RandomInRange(const Vector<T, d>& min,
+  static inline WARN_UNUSED_RESULT Vector<T, d> RandomInRange(const Vector<T, d>& min,
                                            const Vector<T, d>& max) {
     return RandomInRangeHelper(min, max);
   }
@@ -496,7 +496,7 @@ class Vector {
   /// @param v1 First vector.
   /// @param v2 Second vector.
   /// @return Max value of v1 and v2.
-  static inline Vector<T, d> Max(const Vector<T, d>& v1,
+  static inline WARN_UNUSED_RESULT Vector<T, d> Max(const Vector<T, d>& v1,
                                  const Vector<T, d>& v2) {
     return MaxHelper(v1, v2);
   }
@@ -506,7 +506,7 @@ class Vector {
   /// @param v1 First vector.
   /// @param v2 Second vector.
   /// @return Min value of v1 and v2.
-  static inline Vector<T, d> Min(const Vector<T, d>& v1,
+  static inline WARN_UNUSED_RESULT Vector<T, d> Min(const Vector<T, d>& v1,
                                  const Vector<T, d>& v2) {
     return MinHelper(v1, v2);
   }
