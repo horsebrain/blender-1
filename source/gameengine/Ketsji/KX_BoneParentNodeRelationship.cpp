@@ -82,7 +82,7 @@ bool KX_BoneParentRelation::UpdateChildCoordinates(SG_Node *child, const SG_Node
 				// Recompute the child transform components from the transform.
 				child_w_rotation = child_transform.RotationMatrix();
 				child_w_scale = child_w_rotation.ScaleVector3D();
-				child_w_rotation.Scale(mt::vec3(1.0f / child_w_scale.x, 1.0f / child_w_scale.y, 1.0f / child_w_scale.z));
+				child_w_rotation = child_w_rotation.Scale(mt::vec3(1.0f / child_w_scale.x, 1.0f / child_w_scale.y, 1.0f / child_w_scale.z));
 				child_w_pos = child_transform.TranslationVector3D();
 
 				valid_parent_transform = true;

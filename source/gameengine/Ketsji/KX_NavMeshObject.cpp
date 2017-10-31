@@ -567,21 +567,12 @@ void KX_NavMeshObject::DrawNavMesh(NavMeshRenderMode renderMode)
 
 mt::vec3 KX_NavMeshObject::TransformToLocalCoords(const mt::vec3& wpos)
 {
-	mt::mat3 orientation = NodeGetWorldOrientation();
-	orientation.Scale(NodeGetWorldScaling());
-	mt::mat3x4 worldtr(orientation, NodeGetWorldPosition()); 
-	mt::mat3x4 invworldtr = worldtr.Inverse();
-	mt::vec3 lpos = invworldtr * wpos;
-	return lpos;
+	return (NodeGetWorldTransform().Inverse() * wpos);
 }
 
 mt::vec3 KX_NavMeshObject::TransformToWorldCoords(const mt::vec3& lpos)
 {
-	mt::mat3 orientation = NodeGetWorldOrientation();
-	orientation.Scale(NodeGetWorldScaling());
-	mt::mat3x4 worldtr(orientation, NodeGetWorldPosition()); 
-	mt::vec3 wpos = worldtr * lpos;
-	return wpos;
+	return (NodeGetWorldTransform() * lpos);
 }
 
 int KX_NavMeshObject::FindPath(const mt::vec3& from, const mt::vec3& to, float* path, int maxPathLen)
