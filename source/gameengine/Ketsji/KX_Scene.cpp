@@ -1379,7 +1379,6 @@ void KX_Scene::UpdateAnimations(double curtime)
 				RAS_Deformer *deformer = gameobj->GetDeformer();
 				if (deformer && deformer->NeedUpdate()) {
 					m_deformers.push_back(deformer);
-					CM_Debug("schedule deformer update: " << deformer);
 				}
 			}
 			m_SetSize = m_deformers.size();
@@ -1388,15 +1387,12 @@ void KX_Scene::UpdateAnimations(double curtime)
 		virtual void ExecuteRange(enki::TaskSetPartition range, uint32_t UNUSED(threadnum))
 		{
 			for (unsigned int i = range.start, end = range.end; i < end; ++i) {
-				CM_Debug("update deformer: " << m_deformers[i]);
 				m_deformers[i]->Update();
 			}
 		}
 	};
 
 	enki::TaskScheduler& taskScheduler = KX_GetActiveEngine()->GetTaskScheduler();
-
-	CM_FunctionDebug("animated objects: " << m_animatedlist.size() << ", armatures: " << m_armatureList.size());
 
 	AnimationTaskSet animationTask(m_animatedlist, curtime);
 	taskScheduler.AddTaskSetToPipe(&animationTask);
