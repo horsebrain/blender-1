@@ -190,10 +190,12 @@ void BL_ShapeDeformer::Update()
 		bShapeUpdate = true;
 	}
 	// check for armature deform
-	BL_SkinDeformer::UpdateInternal(bShapeUpdate && m_bDynamic);
+	if (BL_SkinDeformer::NeedUpdate()) {
+		BL_SkinDeformer::UpdateInternal(bShapeUpdate && m_bDynamic);
+	}
 
 	/*// non dynamic deformer = Modifer without armature and shape keys, no need to create storage
-	if (!bSkinUpdate && bShapeUpdate && m_bDynamic) {
+	if (!bSkinUpdate && bShapeUpdate && m_bDynamic) {*/
 		// this means that there is no armature, we still need to
 		// update the normal (was not done after shape key calculation)
 		RecalcNormals();
@@ -201,7 +203,7 @@ void BL_ShapeDeformer::Update()
 		// We also need to handle transverts now (used to be in BL_SkinDeformer::Apply())
 		UpdateTransverts();
 		bSkinUpdate = true;
-	} TODO */
+	/*} TODO */
 }
 
 bool BL_ShapeDeformer::NeedUpdate() const
