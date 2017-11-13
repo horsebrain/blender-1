@@ -50,6 +50,11 @@ class KX_SoftBodyDeformer : public RAS_Deformer
 	 */
 	bool m_needUpdateAabb;
 
+	virtual bool SkipVertexTransform()
+	{
+		return true;
+	}
+
 public:
 	KX_SoftBodyDeformer(RAS_MeshObject *pMeshObject, BL_DeformableGameObject *gameobj);
 	virtual ~KX_SoftBodyDeformer();
@@ -80,10 +85,6 @@ public:
 		RAS_Deformer::ProcessReplica();
 		// we have two pointers to deal with but we cannot do it now, will be done in Relink
 		m_bDynamic = false;
-	}
-	virtual bool SkipVertexTransform()
-	{
-		return true;
 	}
 };
 
